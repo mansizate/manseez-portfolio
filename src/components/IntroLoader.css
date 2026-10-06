@@ -1,0 +1,367 @@
+/* =========================================
+   INTRO SCREEN
+   ========================================= */
+
+.intro-loader {
+  position: fixed;
+  inset: 0;
+
+  width: 100%;
+  height: 100vh;
+
+  background: #f3e4c9;
+  color: #873d32;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  z-index: 999999;
+
+  isolation: isolate;
+}
+
+
+/* =========================================
+   SUBTLE EDITORIAL GLOW
+   ========================================= */
+
+.intro-glow {
+  position: absolute;
+
+  width: 420px;
+  height: 420px;
+
+  border-radius: 50%;
+
+  background: rgba(135, 61, 50, 0.06);
+
+  filter: blur(50px);
+
+  pointer-events: none;
+}
+
+
+.intro-glow-one {
+  top: -180px;
+  right: -100px;
+
+  animation: floatingGlowOne 5s ease-in-out infinite;
+}
+
+
+.intro-glow-two {
+  bottom: -220px;
+  left: -120px;
+
+  animation: floatingGlowTwo 6s ease-in-out infinite;
+}
+
+
+@keyframes floatingGlowOne {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  50% {
+    transform: translate(-50px, 40px);
+  }
+}
+
+
+@keyframes floatingGlowTwo {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  50% {
+    transform: translate(50px, -30px);
+  }
+}
+
+
+/* =========================================
+   MAIN CONTENT
+   ========================================= */
+
+.intro-content {
+  position: relative;
+
+  z-index: 5;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* =========================================
+   GREETING
+   ========================================= */
+
+.intro-greeting {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  font-size: clamp(28px, 3vw, 42px);
+
+  font-weight: 500;
+
+  letter-spacing: -1px;
+
+  color: #873d32;
+}
+
+
+/* Dot */
+
+.intro-dot {
+  font-size: 0.7em;
+
+  transform: translateY(-2px);
+}
+
+
+/* Word */
+
+.intro-word {
+  display: inline-block;
+
+  animation:
+    greetingIn 0.22s
+    cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+@keyframes greetingIn {
+  0% {
+    opacity: 0;
+
+    transform:
+      translateY(12px)
+      scale(0.96);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+/* =========================================
+   SMALL LINE
+   ========================================= */
+
+.intro-line {
+  width: 0;
+
+  height: 1px;
+
+  background: #873d32;
+
+  margin-top: 22px;
+
+  opacity: 0.45;
+
+  animation: lineGrow 1s ease forwards;
+
+  animation-delay: 0.3s;
+}
+
+
+@keyframes lineGrow {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 70px;
+  }
+}
+
+
+/* =========================================
+   NAME
+   ========================================= */
+
+.intro-small-text {
+  margin: 14px 0 0;
+
+  font-size: 10px;
+
+  letter-spacing: 4px;
+
+  font-weight: 600;
+
+  color: #873d32;
+
+  opacity: 0.65;
+}
+
+
+/* =========================================
+   CIRCULAR REVEAL
+   ========================================= */
+
+.reveal-circle {
+  position: absolute;
+
+  width: 80px;
+  height: 80px;
+
+  border-radius: 50%;
+
+  background: #873d32;
+
+  left: 50%;
+  top: 50%;
+
+  transform:
+    translate(-50%, -50%)
+    scale(0);
+
+  z-index: 10;
+
+  pointer-events: none;
+}
+
+
+/* =========================================
+   FINAL CREATIVE ANIMATION
+   ========================================= */
+
+.reveal-active .intro-content {
+  animation: contentDisappear 0.55s
+    cubic-bezier(0.76, 0, 0.24, 1)
+    forwards;
+}
+
+
+.reveal-active .reveal-circle {
+  animation: circleReveal 1.05s
+    cubic-bezier(0.76, 0, 0.24, 1)
+    forwards;
+}
+
+
+@keyframes contentDisappear {
+  0% {
+    opacity: 1;
+
+    transform:
+      scale(1)
+      translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+
+    transform:
+      scale(0.85)
+      translateY(-10px);
+  }
+}
+
+
+@keyframes circleReveal {
+  0% {
+    transform:
+      translate(-50%, -50%)
+      scale(0);
+  }
+
+  45% {
+    transform:
+      translate(-50%, -50%)
+      scale(4);
+  }
+
+  100% {
+    transform:
+      translate(-50%, -50%)
+      scale(35);
+  }
+}
+
+
+/* =========================================
+   FINAL FADE
+   ========================================= */
+
+.reveal-active {
+  animation: introFadeOut 1.05s
+    cubic-bezier(0.76, 0, 0.24, 1)
+    forwards;
+
+  animation-delay: 0.05s;
+}
+
+
+@keyframes introFadeOut {
+  0% {
+    opacity: 1;
+  }
+
+  85% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+
+/* =========================================
+   TABLET
+   ========================================= */
+
+@media (max-width: 768px) {
+
+  .intro-greeting {
+    font-size: 30px;
+
+    gap: 11px;
+  }
+
+  .intro-line {
+    margin-top: 18px;
+  }
+
+  .intro-small-text {
+    font-size: 9px;
+
+    letter-spacing: 3px;
+  }
+}
+
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 480px) {
+
+  .intro-greeting {
+    font-size: 25px;
+
+    gap: 9px;
+  }
+
+  .intro-small-text {
+    font-size: 8px;
+
+    letter-spacing: 2.5px;
+  }
+}

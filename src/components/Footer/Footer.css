@@ -1,0 +1,315 @@
+/* =========================================
+   FOOTER
+========================================= */
+
+.footer {
+  width: 100%;
+  background: transparent;
+
+  color: #765f50;
+
+  padding: 70px 5% 25px;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   MAIN CONTAINER
+========================================= */
+
+.footer-container {
+  width: 100%;
+  max-width: 1250px;
+
+  margin: 0 auto;
+
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 120px;
+
+  align-items: start;
+}
+
+
+/* =========================================
+   LABEL
+========================================= */
+
+.footer-label {
+  display: block;
+
+  margin-bottom: 12px;
+
+  color: #8b7565;
+
+  font-size: 14px;
+
+  font-weight: 600;
+}
+
+
+/* =========================================
+   CONTACT
+========================================= */
+
+.footer-contact {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 38px;
+}
+
+
+.footer-item a {
+  color: #765f50;
+
+  font-size: 18px;
+
+  text-decoration: none;
+
+  transition: color 0.3s ease;
+}
+
+
+.footer-item a:hover {
+  color: #9b7cf6;
+}
+
+
+.footer-item p {
+  margin: 0;
+
+  color: #765f50;
+
+  font-size: 17px;
+
+  line-height: 1.6;
+}
+
+
+/* =========================================
+   SOCIAL
+========================================= */
+
+.footer-social {
+  width: 100%;
+  max-width: 300px;
+
+  display: flex;
+
+  flex-direction: column;
+}
+
+
+.footer-social > .footer-label {
+  margin-bottom: 4px;
+}
+
+
+.footer-social a {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns: 30px 1fr 20px;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 10px 0;
+
+  color: #765f50;
+
+  text-decoration: none;
+
+  font-size: 19px;
+
+  border-bottom: 1px solid rgba(118, 95, 80, 0.25);
+
+  transition:
+    color 0.3s ease,
+    padding-left 0.3s ease,
+    border-color 0.3s ease;
+}
+
+
+/* Icons */
+
+.footer-social a svg {
+  width: 18px;
+
+  height: 18px;
+
+  color: #765f50;
+
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+
+/* Arrow */
+
+.footer-social a b {
+  font-size: 17px;
+
+  font-weight: 400;
+
+  text-align: right;
+
+  opacity: 0.6;
+
+  transition: transform 0.3s ease;
+}
+
+
+/* Hover */
+
+.footer-social a:hover {
+  color: #9b7cf6;
+
+  border-color: #9b7cf6;
+
+  padding-left: 7px;
+}
+
+
+.footer-social a:hover svg {
+  color: #9b7cf6;
+
+  transform: scale(1.15);
+}
+
+
+.footer-social a:hover b {
+  transform: translate(4px, -4px);
+
+  opacity: 1;
+}
+
+
+/* =========================================
+   BOTTOM
+========================================= */
+
+.footer-bottom {
+  width: 100%;
+  max-width: 1250px;
+
+  margin: 70px auto 0;
+
+  padding-top: 22px;
+
+  border-top: 1px solid rgba(118, 95, 80, 0.25);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+}
+
+
+.footer-bottom p {
+  margin: 0;
+
+  color: #8b7565;
+
+  font-size: 13px;
+}
+
+
+/* =========================================
+   BACK TO TOP
+========================================= */
+
+.back-top {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  color: #806b5b;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  letter-spacing: 2px;
+
+  text-decoration: none;
+
+  transition: color 0.3s ease;
+}
+
+
+.back-top span {
+  font-size: 18px;
+
+  transition: transform 0.3s ease;
+}
+
+
+.back-top:hover {
+  color: #9b7cf6;
+}
+
+
+.back-top:hover span {
+  transform: translateY(-4px);
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 750px) {
+
+  .footer-container {
+    grid-template-columns: 1fr;
+
+    gap: 45px;
+  }
+
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 500px) {
+
+  .footer {
+    padding: 55px 24px 20px;
+  }
+
+
+  .footer-container {
+    gap: 40px;
+  }
+
+
+  .footer-social {
+    max-width: 100%;
+  }
+
+
+  .footer-bottom {
+    margin-top: 50px;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 18px;
+  }
+
+}

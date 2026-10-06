@@ -1,0 +1,175 @@
+/* Contact styles remain in the global stylesheet to preserve the existing cascade. *//* =========================================
+   CONTACT / CTA SECTION
+========================================= */
+
+.contact {
+  width: 100%;
+  background: transparent;
+  padding: 50px 5% 70px;
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   BUTTON WRAPPER
+========================================= */
+
+.cta-wrapper {
+  width: 100%;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 30px;
+}
+
+
+/* =========================================
+   CTA BOX
+========================================= */
+
+.cta-box {
+  min-width: 225px;
+
+  height: 66px;
+
+  padding: 0 28px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  box-sizing: border-box;
+
+  border-radius: 10px;
+
+  font-size: 17px;
+
+  font-weight: 600;
+
+  text-decoration: none;
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    color 0.3s ease,
+    background 0.3s ease,
+    border-color 0.3s ease;
+}
+
+
+/* =========================================
+   PLAY WITH ME
+========================================= */
+
+.cta-play {
+  color: #765f50;
+
+  background: transparent;
+
+  border: 1px solid rgba(118, 95, 80, 0.45);
+}
+
+
+/* =========================================
+   HIRE ME
+========================================= */
+
+.cta-hire {
+  color: #ffffff;
+
+  background: #765f50;
+
+  border: 1px solid #765f50;
+}
+
+
+/* =========================================
+   ARROW
+========================================= */
+
+.cta-arrow {
+  font-size: 21px;
+
+  line-height: 1;
+
+  transition: transform 0.3s ease;
+}
+
+
+/* =========================================
+   HOVER
+========================================= */
+
+.cta-box:hover {
+  transform: translateY(-5px);
+}
+
+
+/* Play */
+
+.cta-play:hover {
+  color: #9b7cf6;
+
+  border-color: #9b7cf6;
+
+  box-shadow:
+    0 12px 30px rgba(118, 95, 80, 0.12);
+}
+
+
+/* Hire */
+
+.cta-hire:hover {
+  color: #ffffff;
+
+  background: #9b7cf6;
+
+  border-color: #9b7cf6;
+
+  box-shadow:
+    0 12px 30px rgba(155, 124, 246, 0.25);
+}
+
+
+/* Arrow animation */
+
+.cta-box:hover .cta-arrow {
+  transform: translateX(6px);
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+  .contact {
+    padding: 35px 20px 55px;
+  }
+
+  .cta-wrapper {
+    flex-direction: column;
+
+    gap: 16px;
+  }
+
+  .cta-box {
+    width: 100%;
+
+    max-width: 300px;
+
+    min-width: 0;
+
+    height: 62px;
+  }
+
+}

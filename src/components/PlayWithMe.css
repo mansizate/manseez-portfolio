@@ -1,0 +1,863 @@
+/* =====================================================
+   PLAY WITH ME
+   MANSI PORTFOLIO
+   SKIN + BROWN THEME
+===================================================== */
+
+.play-page {
+  --skin: #e4d1b5;
+  --skin-light: #f7efe3;
+  --skin-soft: #eee2d0;
+
+  --brown: #765f50;
+  --brown-dark: #4a382f;
+  --brown-light: #927866;
+  --brown-muted: #a28f7d;
+
+  --border: rgba(118, 95, 80, 0.28);
+
+  width: 100%;
+  height: 100vh;
+  min-height: 620px;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  padding: 22px 4vw;
+
+  background:
+    radial-gradient(
+      circle at 5% 10%,
+      rgba(118, 95, 80, 0.12),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 95% 85%,
+      rgba(118, 95, 80, 0.08),
+      transparent 25%
+    ),
+    var(--skin);
+
+  color: var(--brown);
+
+  font-family: inherit;
+}
+
+
+/* =====================================================
+   TOP BAR
+===================================================== */
+
+.play-topbar {
+  width: 100%;
+  max-width: 1450px;
+
+  height: 42px;
+
+  margin: 0 auto 14px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+}
+
+
+.back-home {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 9px 16px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 30px;
+
+  background: rgba(247, 239, 227, 0.5);
+
+  color: var(--brown);
+
+  text-decoration: none;
+
+  font-size: 13px;
+
+  transition: 0.25s ease;
+}
+
+
+.back-home:hover {
+  background: var(--brown);
+
+  color: var(--skin-light);
+
+  border-color: var(--brown);
+
+  transform: translateY(-2px);
+}
+
+
+.play-label {
+  color: var(--brown-light);
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  letter-spacing: 3px;
+}
+
+
+/* =====================================================
+   MAIN LAYOUT
+===================================================== */
+
+.play-game-layout {
+  width: 100%;
+  max-width: 1450px;
+
+  height: calc(100vh - 100px);
+
+  min-height: 500px;
+
+  margin: 0 auto;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(260px, 0.8fr)
+    minmax(430px, 1.25fr)
+    minmax(210px, 0.45fr);
+
+  gap: 18px;
+
+  align-items: stretch;
+}
+
+
+/* =====================================================
+   SHARED CARDS
+===================================================== */
+
+.chat-card,
+.chess-card,
+.status-card,
+.moves-card,
+.game-button {
+  border: 1px solid var(--border);
+
+  background: rgba(
+    247,
+    239,
+    227,
+    0.62
+  );
+
+  box-shadow:
+    0 12px 30px
+    rgba(74, 56, 47, 0.08);
+
+  backdrop-filter: blur(8px);
+}
+
+
+/* =====================================================
+   CHAT
+===================================================== */
+
+.chat-card {
+  min-width: 0;
+
+  height: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  overflow: hidden;
+
+  border-radius: 15px;
+}
+
+
+/* HEADER */
+
+.chat-header {
+  height: 65px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 0 20px;
+
+  border-bottom: 1px solid var(--border);
+}
+
+
+.chat-avatar {
+  width: 34px;
+
+  height: 34px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--brown);
+
+  color: var(--skin-light);
+
+  font-size: 16px;
+}
+
+
+.chat-header h2 {
+  margin: 0;
+
+  color: var(--brown-dark);
+
+  font-size: 17px;
+
+  font-weight: 650;
+}
+
+
+.chat-header span {
+  display: block;
+
+  margin-top: 3px;
+
+  color: var(--brown-light);
+
+  font-size: 11px;
+}
+
+
+/* MESSAGES */
+
+.chat-messages {
+  flex: 1;
+
+  min-height: 0;
+
+  padding: 20px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 12px;
+
+  overflow-y: auto;
+}
+
+
+.chat-message {
+  max-width: 88%;
+
+  padding: 12px 14px;
+
+  border-radius: 11px;
+
+  font-size: 13px;
+
+  line-height: 1.55;
+}
+
+
+.bot-message {
+  align-self: flex-start;
+
+  background: var(--skin-soft);
+
+  color: var(--brown-dark);
+}
+
+
+.user-message {
+  align-self: flex-end;
+
+  background: var(--brown);
+
+  color: var(--skin-light);
+}
+
+
+/* INPUT */
+
+.chat-input {
+  flex-shrink: 0;
+
+  display: flex;
+
+  gap: 9px;
+
+  padding: 12px;
+
+  border-top: 1px solid var(--border);
+}
+
+
+.chat-input input {
+  width: 100%;
+
+  min-width: 0;
+
+  height: 46px;
+
+  box-sizing: border-box;
+
+  padding: 0 14px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 9px;
+
+  outline: none;
+
+  background: var(--skin-light);
+
+  color: var(--brown-dark);
+
+  font-family: inherit;
+
+  font-size: 13px;
+}
+
+
+.chat-input input::placeholder {
+  color: var(--brown-muted);
+}
+
+
+.chat-input input:focus {
+  border-color: var(--brown);
+}
+
+
+.chat-input button {
+  width: 48px;
+
+  height: 46px;
+
+  flex-shrink: 0;
+
+  border: 0;
+
+  border-radius: 9px;
+
+  background: var(--brown);
+
+  color: var(--skin-light);
+
+  cursor: pointer;
+
+  font-size: 17px;
+
+  transition: 0.25s ease;
+}
+
+
+.chat-input button:hover {
+  background: var(--brown-dark);
+
+  transform: translateX(2px);
+}
+
+
+/* =====================================================
+   CHESS CARD
+===================================================== */
+
+.chess-card {
+  min-width: 0;
+
+  height: 100%;
+
+  padding: 12px;
+
+  box-sizing: border-box;
+
+  border-radius: 15px;
+
+  display: flex;
+
+  flex-direction: column;
+}
+
+
+/* PLAYER */
+
+.chess-player {
+  height: 52px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 0 8px;
+}
+
+
+.player-avatar {
+  width: 36px;
+
+  height: 36px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--brown);
+
+  color: var(--skin-light);
+
+  font-size: 14px;
+
+  font-weight: 700;
+}
+
+
+.player-info strong {
+  display: block;
+
+  color: var(--brown-dark);
+
+  font-size: 14px;
+}
+
+
+.player-info span {
+  display: block;
+
+  margin-top: 2px;
+
+  color: var(--brown-light);
+
+  font-size: 11px;
+}
+
+
+/* =====================================================
+   CHESS BOARD
+===================================================== */
+
+.chess-board {
+  width: min(
+    100%,
+    calc(100vh - 190px)
+  );
+
+  aspect-ratio: 1 / 1;
+
+  max-width: 650px;
+
+  margin: auto;
+
+  border: 4px solid var(--brown);
+
+  border-radius: 7px;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+
+  box-shadow:
+    0 16px 35px
+    rgba(74, 56, 47, 0.17);
+}
+
+
+/* =====================================================
+   SIDEBAR
+===================================================== */
+
+.game-sidebar {
+  min-width: 0;
+
+  height: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 12px;
+}
+
+
+/* STATUS */
+
+.status-card {
+  min-height: 56px;
+
+  flex-shrink: 0;
+
+  box-sizing: border-box;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 9px;
+
+  padding: 12px;
+
+  border-radius: 13px;
+
+  color: var(--brown);
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  text-align: center;
+}
+
+
+.status-dot {
+  width: 8px;
+
+  height: 8px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: var(--brown);
+}
+
+
+.thinking-dot {
+  animation: pulse 0.8s infinite;
+}
+
+
+/* MOVES */
+
+.moves-card {
+  flex: 1;
+
+  min-height: 0;
+
+  overflow: hidden;
+
+  border-radius: 13px;
+}
+
+
+.moves-title {
+  height: 44px;
+
+  display: flex;
+
+  align-items: center;
+
+  padding: 0 15px;
+
+  border-bottom: 1px solid var(--border);
+
+  color: var(--brown);
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  letter-spacing: 2px;
+}
+
+
+.moves-list {
+  height: calc(100% - 44px);
+
+  overflow-y: auto;
+
+  padding: 8px 13px;
+
+  box-sizing: border-box;
+}
+
+
+.empty-moves {
+  padding: 10px 3px;
+
+  color: var(--brown-muted);
+
+  font-size: 12px;
+}
+
+
+.move-row {
+  display: grid;
+
+  grid-template-columns:
+    25px 1fr 1fr;
+
+  gap: 5px;
+
+  padding: 8px 2px;
+
+  border-bottom: 1px solid
+    rgba(118, 95, 80, 0.1);
+
+  color: var(--brown-dark);
+
+  font-size: 12px;
+}
+
+
+.move-number {
+  color: var(--brown-muted);
+}
+
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+.game-button {
+  width: 100%;
+
+  height: 45px;
+
+  flex-shrink: 0;
+
+  border-radius: 10px;
+
+  color: var(--brown);
+
+  font-family: inherit;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.25s ease;
+}
+
+
+.game-button:hover {
+  background: var(--brown);
+
+  border-color: var(--brown);
+
+  color: var(--skin-light);
+
+  transform: translateY(-2px);
+}
+
+
+.game-button.primary {
+  background: var(--brown);
+
+  border-color: var(--brown);
+
+  color: var(--skin-light);
+}
+
+
+.game-button.primary:hover {
+  background: var(--brown-dark);
+
+  border-color: var(--brown-dark);
+}
+
+
+/* =====================================================
+   ANIMATION
+===================================================== */
+
+@keyframes pulse {
+  0% {
+    box-shadow:
+      0 0 0 0
+      rgba(118, 95, 80, 0.4);
+  }
+
+  70% {
+    box-shadow:
+      0 0 0 7px
+      rgba(118, 95, 80, 0);
+  }
+
+  100% {
+    box-shadow:
+      0 0 0 0
+      rgba(118, 95, 80, 0);
+  }
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 1050px) {
+
+  .play-page {
+    overflow-y: auto;
+
+    height: auto;
+
+    min-height: 100vh;
+  }
+
+
+  .play-game-layout {
+    height: auto;
+
+    grid-template-columns:
+      1fr 1.4fr;
+
+    min-height: 0;
+  }
+
+
+  .game-sidebar {
+    grid-column: 1 / -1;
+
+    display: grid;
+
+    grid-template-columns:
+      1fr 1.5fr 1fr 1fr;
+
+    height: 220px;
+  }
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 720px) {
+
+  .play-page {
+    height: auto;
+
+    min-height: 100vh;
+
+    overflow-y: auto;
+
+    padding: 18px;
+  }
+
+
+  .play-topbar {
+    margin-bottom: 25px;
+  }
+
+
+  .play-label {
+    display: none;
+  }
+
+
+  .play-game-layout {
+    grid-template-columns: 1fr;
+
+    gap: 15px;
+  }
+
+
+  .chess-card {
+    order: 1;
+  }
+
+
+  .chat-card {
+    order: 2;
+
+    min-height: 420px;
+
+    height: 420px;
+  }
+
+
+  .game-sidebar {
+    order: 3;
+
+    grid-column: auto;
+
+    display: flex;
+
+    height: auto;
+  }
+
+
+  .moves-card {
+    min-height: 220px;
+
+    flex: none;
+  }
+
+
+  .chess-board {
+    width: min(
+      100%,
+      calc(100vw - 48px)
+    );
+
+    margin: auto;
+  }
+
+}
+
+
+/* =====================================================
+   SMALL MOBILE
+===================================================== */
+
+@media (max-width: 430px) {
+
+  .play-page {
+    padding: 14px;
+  }
+
+
+  .back-home {
+    font-size: 12px;
+
+    padding: 8px 13px;
+  }
+
+
+  .chess-card {
+    padding: 8px;
+  }
+
+
+  .chess-board {
+    width: calc(100vw - 44px);
+
+    border-width: 3px;
+  }
+
+}
