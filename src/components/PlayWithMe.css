@@ -184,7 +184,9 @@
 }
 
 
-/* HEADER */
+/* =====================================================
+   CHAT HEADER
+===================================================== */
 
 .chat-header {
   height: 65px;
@@ -248,7 +250,9 @@
 }
 
 
-/* MESSAGES */
+/* =====================================================
+   CHAT MESSAGES
+===================================================== */
 
 .chat-messages {
   flex: 1;
@@ -261,44 +265,134 @@
 
   flex-direction: column;
 
-  gap: 12px;
+  gap: 13px;
 
   overflow-y: auto;
+
+  scroll-behavior: smooth;
 }
 
 
+/* CHAT SCROLLBAR */
+
+.chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: rgba(118, 95, 80, 0.35);
+
+  border-radius: 20px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: var(--brown);
+}
+
+
+/* =====================================================
+   CHAT MESSAGE BOX
+===================================================== */
+
 .chat-message {
-  max-width: 88%;
+  max-width: 82%;
 
-  padding: 12px 14px;
+  padding: 13px 17px;
 
-  border-radius: 11px;
+  border-radius: 16px;
+
+  box-sizing: border-box;
+
+  font-family: inherit;
 
   font-size: 13px;
 
+  font-weight: 400;
+
   line-height: 1.55;
+
+  word-wrap: break-word;
+
+  overflow-wrap: anywhere;
+
+  box-shadow:
+    0 3px 10px
+    rgba(74, 56, 47, 0.07);
+
+  animation: chatMessageIn 0.25s ease;
 }
 
+
+/* =====================================================
+   AI MESSAGE
+   LEFT SIDE
+===================================================== */
 
 .bot-message {
   align-self: flex-start;
 
-  background: var(--skin-soft);
+  background: #eee2d0;
 
   color: var(--brown-dark);
+
+  border-top-left-radius: 5px;
+
+  border-top-right-radius: 16px;
+
+  border-bottom-right-radius: 16px;
+
+  border-bottom-left-radius: 16px;
 }
 
+
+/* =====================================================
+   USER MESSAGE
+   RIGHT SIDE
+===================================================== */
 
 .user-message {
   align-self: flex-end;
 
   background: var(--brown);
 
-  color: var(--skin-light);
+  color: #fff8ef;
+
+  border-top-right-radius: 5px;
+
+  border-top-left-radius: 16px;
+
+  border-bottom-right-radius: 16px;
+
+  border-bottom-left-radius: 16px;
 }
 
 
-/* INPUT */
+/* =====================================================
+   MESSAGE ANIMATION
+===================================================== */
+
+@keyframes chatMessageIn {
+  from {
+    opacity: 0;
+
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateY(0);
+  }
+}
+
+
+/* =====================================================
+   CHAT INPUT
+===================================================== */
 
 .chat-input {
   flex-shrink: 0;
@@ -310,6 +404,13 @@
   padding: 12px;
 
   border-top: 1px solid var(--border);
+
+  background: rgba(
+    247,
+    239,
+    227,
+    0.45
+  );
 }
 
 
@@ -337,6 +438,10 @@
   font-family: inherit;
 
   font-size: 13px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 
@@ -347,6 +452,10 @@
 
 .chat-input input:focus {
   border-color: var(--brown);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(118, 95, 80, 0.08);
 }
 
 
@@ -401,7 +510,9 @@
 }
 
 
-/* PLAYER */
+/* =====================================================
+   PLAYER
+===================================================== */
 
 .chess-player {
   height: 52px;
@@ -508,7 +619,9 @@
 }
 
 
-/* STATUS */
+/* =====================================================
+   STATUS
+===================================================== */
 
 .status-card {
   min-height: 56px;
@@ -557,7 +670,9 @@
 }
 
 
-/* MOVES */
+/* =====================================================
+   MOVES
+===================================================== */
 
 .moves-card {
   flex: 1;
@@ -621,7 +736,8 @@
 
   padding: 8px 2px;
 
-  border-bottom: 1px solid
+  border-bottom:
+    1px solid
     rgba(118, 95, 80, 0.1);
 
   color: var(--brown-dark);
@@ -719,7 +835,6 @@
 ===================================================== */
 
 @media (max-width: 1050px) {
-
   .play-page {
     overflow-y: auto;
 
@@ -749,7 +864,6 @@
 
     height: 220px;
   }
-
 }
 
 
@@ -758,7 +872,6 @@
 ===================================================== */
 
 @media (max-width: 720px) {
-
   .play-page {
     height: auto;
 
@@ -828,6 +941,38 @@
     margin: auto;
   }
 
+
+  /* MOBILE CHAT */
+
+  .chat-message {
+    max-width: 88%;
+
+    font-size: 13px;
+
+    padding: 12px 15px;
+  }
+
+
+  .chat-messages {
+    padding: 16px;
+
+    gap: 11px;
+  }
+
+
+  .chat-header {
+    padding: 0 16px;
+  }
+
+
+  .chat-header h2 {
+    font-size: 17px;
+  }
+
+
+  .chat-input {
+    padding: 10px;
+  }
 }
 
 
@@ -836,7 +981,6 @@
 ===================================================== */
 
 @media (max-width: 430px) {
-
   .play-page {
     padding: 14px;
   }
@@ -860,4 +1004,22 @@
     border-width: 3px;
   }
 
+
+  .chat-message {
+    max-width: 91%;
+
+    font-size: 13px;
+
+    padding: 11px 14px;
+  }
+
+
+  .chat-input input {
+    font-size: 13px;
+  }
+
+
+  .chat-input button {
+    width: 44px;
+  }
 }
