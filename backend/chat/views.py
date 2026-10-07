@@ -523,7 +523,7 @@ def chat_message(request):
 
         try:
             try:
-                yield from generate_reply(use_live_search=True)
+              yield from generate_reply(use_live_search=False)
             except Exception as search_error:
                 # Search grounding has separate quota requirements. A normal
                 # AI response is still useful when that quota is unavailable.
