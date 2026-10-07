@@ -1,161 +1,172 @@
-import { useState } from "react";
-import { createPortal } from "react-dom";
-import { ArrowLeft, ArrowRight, Calendar, MapPin } from "lucide-react";
 import "./Experience.css";
 
-const experiences = [
-  {
-    title: "Web Development Intern",
-    company: "Infostrategy Technologies LLP",
-    location: "Aurangabad, India",
-    period: "Nov 2024 — Dec 2024",
-    highlights: [
-      "Developed the complete Snehrishta matrimonial website.",
-      "Built a responsive, clean, and intuitive user interface.",
-      "Improved layout, navigation, and overall user experience.",
-      "Ensured compatibility and performance across devices.",
-    ],
-    link: "https://www.snehrishta.com/",
-  },
-  {
-    title: "IT Intern",
-    company: "Flyer Renewable Energy Infrastructure Pvt. Ltd.",
-    location: "Aurangabad, India",
-    period: "Jan 2026 — Mar 2026",
-    highlights: [
-      "Worked on practical IT support and internal process improvement.",
-      "Contributed to day-to-day digital operations and documentation workflows.",
-      "Built a stronger understanding of system reliability, documentation, and productivity.",
-    ],
-  },
-  {
-    title: "Software Engineer Intern",
-    company: "Infostrategy Technologies LLP",
-    location: "Aurangabad, India",
-    period: "Jan 2026 — May 2026",
-    highlights: [
-      "Developed and refined client-facing web solutions with a product mindset.",
-      "Collaborated on design implementation and feature delivery for real-world interfaces.",
-      "Strengthened front-end engineering, debugging, and iterative improvement skills.",
-    ],
-  },
-];
+export default function Experience() {
+  const experiences = [
+    {
+      title: "Software Engineer Intern",
+      company: "Infostrategy Technologies LLP",
+      year: "2026",
+      period: "Jan 2026 — May 2026",
+      link: "https://freebiodata.online/",
+      companyLink:
+        "https://www.linkedin.com/company/infostrategy-technologies-llp/posts/?feedView=all",
+      description:
+        "Built and maintained FreeBioData, a public online biodata generator. Designed 30+ responsive templates and page layouts, resolved debugging tasks, and improved application stability and user experience.",
+    },
 
-export default function ExperienceModal() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [currentExperience, setCurrentExperience] = useState(0);
-  const [direction, setDirection] = useState(1);
+    {
+      title: "IT Intern",
+      company: "Flyer Renewable Energy Infrastructure Pvt. Ltd.",
+      year: "2026",
+      period: "Jan 2026 — Mar 2026",
+      link: "https://flyerinfra.com/",
+      companyLink: "https://flyerinfra.com/",
+      description:
+        "Managed and administered the company WordPress website during a three-month internship. Resolved website bugs and updated content across multiple pages while maintaining an accurate and reliable website.",
+    },
 
-  const current = experiences[currentExperience];
+    {
+      title: "Web Development Intern",
+      company: "Infostrategy Technologies LLP",
+      year: "2024",
+      period: "Nov 2024 — Dec 2024",
+      link: "https://www.snehrishta.com/",
+      companyLink:
+        "https://www.linkedin.com/company/infostrategy-technologies-llp/posts/?feedView=all",
+      description:
+        "Independently developed SnehRishta, a live matrimonial website. Enhanced website functionality and front-end features while analyzing and troubleshooting website issues to improve usability and reliability.",
+    },
 
-  const handleOpen = () => {
-    setDirection(1);
-    setCurrentExperience(0);
-    setIsOpen(true);
-  };
+    {
+      title: "Computer Science Engineering",
+      company: "Deogiri Institute of Engineering and Management Studies",
+      year: "2026",
+      period: "2023 — 2026 • SGPA 8.0",
+      link: "https://deogiricollege.org/",
+      companyLink: "https://deogiricollege.org/",
+      description:
+        "Completed B.Tech in Computer Science Engineering. Built a strong foundation in Data Structures and Algorithms, Object-Oriented Programming, DBMS, Operating Systems, Computer Networks, and Software Engineering while developing practical web projects.",
+    },
 
-  const handleNext = () => {
-    setDirection(1);
-    setCurrentExperience((prev) => Math.min(prev + 1, experiences.length - 1));
-  };
+    {
+      title: "Higher Secondary Education",
+      company: "S.B.E.S. College of Science",
+      year: "2022",
+      period: "H.S.C. • 66.83%",
+      link: "https://www.sbscience.org/",
+      companyLink: "https://www.sbscience.org/",
+      description:
+        "Completed Higher Secondary Certificate education with 66.83%, building the academic foundation that led to pursuing Computer Science Engineering at the undergraduate level.",
+    },
 
-  const handlePrevious = () => {
-    setDirection(-1);
-    setCurrentExperience((prev) => Math.max(prev - 1, 0));
-  };
-
-  const handleBackToCover = () => {
-    setIsOpen(false);
-    setCurrentExperience(0);
-    setDirection(1);
-  };
-
-  if (isOpen) {
-    return createPortal(
-      <div className="exp-modal-overlay" aria-live="polite">
-        <div className="experience-file" role="dialog" aria-modal="true" aria-label="Experience details">
-          <div className="experience-file-header">
-            <button
-              className="experience-back-btn"
-              onClick={handleBackToCover}
-              aria-label="Back to experience"
-              type="button"
-            >
-              <ArrowLeft size={17} />
-              <span>Back</span>
-            </button>
-
-            <div className="experience-page-indicator">
-              {String(currentExperience + 1).padStart(2, "0")} / {String(experiences.length).padStart(2, "0")}
-            </div>
-
-            <div className="experience-nav">
-              <button
-                className="experience-nav-btn"
-                onClick={handlePrevious}
-                disabled={currentExperience === 0}
-                aria-label="Previous experience"
-                type="button"
-              >
-                <ArrowLeft size={16} />
-              </button>
-              <button
-                className="experience-nav-btn"
-                onClick={handleNext}
-                disabled={currentExperience === experiences.length - 1}
-                aria-label="Next experience"
-                type="button"
-              >
-                <ArrowRight size={16} />
-              </button>
-            </div>
-          </div>
-
-          <div
-            key={current.title + current.company}
-            className={`experience-page experience-page--${direction > 0 ? "next" : "prev"}`}
-          >
-            <div className="experience-page-tag">Internship record</div>
-            <h3>{current.title}</h3>
-            <p className="experience-company">{current.company}</p>
-
-            <div className="experience-meta">
-              <span>
-                <Calendar size={14} /> {current.period}
-              </span>
-              <span>
-                <MapPin size={14} /> {current.location}
-              </span>
-            </div>
-
-            <ul className="experience-highlights">
-              {current.highlights.map((highlight) => (
-                <li key={highlight}>{highlight}</li>
-              ))}
-              {current.link && (
-                <li>
-                  Live link: <a href={current.link} target="_blank" rel="noreferrer">{current.link}</a>
-                </li>
-              )}
-            </ul>
-          </div>
-        </div>
-      </div>,
-      document.body,
-    );
-  }
+    {
+      title: "Secondary School Education",
+      company: "Saraswati Bhuvan Prashala",
+      year: "2020",
+      period: "S.S.C. • 92.60%",
+      link: "https://saraswatibhuvan.org/",
+      companyLink: "https://saraswatibhuvan.org/",
+      description:
+        "Completed Secondary School Certificate education with 92.60%, building the foundation for higher education and the journey toward computer science and technology.",
+    },
+  ];
 
   return (
-    <section className="experience-section" id="experience">
-      <div className="experience-cover" aria-label="Professional experience cover">
-        <div className="experience-paperclip" aria-hidden="true" />
-        <div className="experience-cover-inner">
-          <p className="eyebrow">Professional experience</p>
-          <h2>Internships &amp; Trainings</h2>
-          <div className="experience-cover-stamp">A brief record</div>
-          <button className="experience-open-btn" onClick={handleOpen}>
-            Internships &amp; Trainings
-          </button>
+    <section className="experience" id="experience">
+      <div className="experience-inner">
+
+        {/* =================================================
+            HEADING
+        ================================================= */}
+
+        <div className="experience-heading">
+          <span>MY JOURNEY</span>
+
+          <h2>
+            My Career &amp;
+            <br />
+            <em>Experience</em>
+          </h2>
+        </div>
+
+
+        {/* =================================================
+            TIMELINE
+        ================================================= */}
+
+        <div className="experience-timeline">
+
+          {/* ONE CONTINUOUS CENTER LINE */}
+
+          <div className="experience-line">
+            <div className="experience-line-glow"></div>
+
+            <div className="experience-line-dot"></div>
+          </div>
+
+
+          {/* =================================================
+              EXPERIENCE ITEMS
+          ================================================= */}
+
+          {experiences.map((item, index) => (
+            <article
+              className="experience-item"
+              key={`${item.title}-${index}`}
+            >
+
+              {/* =============================================
+                  LEFT SIDE
+              ============================================= */}
+
+              <div className="experience-role">
+
+                <h3>{item.title}</h3>
+
+                <a
+                  href={item.companyLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {item.company}
+                </a>
+
+              </div>
+
+
+              {/* =============================================
+                  CENTER YEAR
+              ============================================= */}
+
+              <div className="experience-year">
+                <span>{item.year}</span>
+              </div>
+
+
+              {/* =============================================
+                  RIGHT SIDE
+              ============================================= */}
+
+              <div className="experience-info">
+
+                <small>{item.period}</small>
+
+                <p>{item.description}</p>
+
+                <a
+                  className="experience-link"
+                  href={item.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Visit →
+                </a>
+
+              </div>
+
+            </article>
+          ))}
+
         </div>
       </div>
     </section>

@@ -29,8 +29,7 @@ import PlayWithMe from "./components/PlayWithMe";
 // ==========================================
 // PROJECT PAGES
 // ==========================================
-import GetInn from "./pages/GetInn";
-import RecipeRecommend from "./pages/RecipeRecommend";
+
 
 
 // ==========================================
@@ -50,23 +49,15 @@ function MainPage() {
 
       {/* Portfolio Sections */}
       <Home />
-
       <About />
-
       <ExperienceModal />
-
       <Skills />
-
       <Portfolio />
-
       <Contact />
-
       <Footer />
     </>
   );
 }
-
-
 // ==========================================
 // APP
 // ==========================================
@@ -77,12 +68,12 @@ export default function App() {
 
         {/* ==================================
             HOME / PORTFOLIO
+            URL: /
         ================================== */}
         <Route
           path="/"
           element={<MainPage />}
         />
-
 
         {/* ==================================
             PLAY WITH ME
@@ -93,23 +84,6 @@ export default function App() {
           element={<PlayWithMe />}
         />
 
-
-        {/* ==================================
-            GET INN PROJECT
-        ================================== */}
-        <Route
-          path="/projects/get-inn"
-          element={<GetInn />}
-        />
-
-
-        {/* ==================================
-            RECIPE RECOMMENDATION PROJECT
-        ================================== */}
-        <Route
-          path="/projects/recipe"
-          element={<RecipeRecommend />}
-        />
 
       </Routes>
     </Router>

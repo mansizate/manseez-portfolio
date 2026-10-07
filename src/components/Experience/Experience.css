@@ -1,867 +1,856 @@
-/* =========================================
+/* =========================================================
    EXPERIENCE SECTION
-========================================= */
+   ========================================================= */
 
-.experience-section {
-  position: relative;
+.experience {
+  width: 100%;
+  padding: 80px 0 110px;
 
-  width: min(1390px, 100%);
-  min-height: 695px;
+  background: transparent;
 
-  margin: 12px auto 0;
-  padding: 58px 40px 48px;
+  color: #2b1712;
+
+  overflow: hidden;
 
   box-sizing: border-box;
-
-  /* REMOVED OUTER BACKGROUND */
-  background: transparent;
-
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-
-  scroll-margin-top: 110px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  overflow: visible;
 }
 
-
-/* =========================================
-   EXPERIENCE TITLE
-   No beige background
-========================================= */
-
-.experience-section::before {
-  
-
-  position: absolute;
-
-  top: 0;
-  left: 80px;
-
-  padding: 0;
-
-  background: transparent;
-
-  color: #594d43;
-
-  font-size: 12px;
-  font-weight: 800;
-
-  letter-spacing: 0.14em;
-
-  text-transform: uppercase;
-
-  z-index: 10;
-}
-
-
-/* Remove old decorative element */
-.experience-section::after {
-  display: none;
-  content: none;
-}
-
-
-/* =========================================
-   MAIN BROWN EXPERIENCE CARD
-========================================= */
-
-.experience-cover {
-  position: relative;
-
-  width: min(950px, 100%);
-  height: 586px;
-  min-height: 586px;
+.experience-inner {
+  width: min(1180px, calc(100% - 40px));
 
   margin: 0 auto;
-  padding: 52px 86px;
 
   box-sizing: border-box;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background:
-    linear-gradient(
-      135deg,
-      #302018 0%,
-      #3b2720 45%,
-      #2b1d18 100%
-    );
-
-  border: 1px solid rgba(236, 213, 176, 0.16);
-
-  border-radius: 32px;
-
-  box-shadow:
-    0 30px 55px rgba(48, 35, 28, 0.27);
-
-  transition:
-    transform 0.5s ease,
-    box-shadow 0.5s ease;
 }
 
 
-/* =========================================
-   INNER FRAME
-========================================= */
+/* =========================================================
+   HEADING
+   ========================================================= */
 
-.experience-cover-inner {
+.experience-heading {
+  text-align: center;
+
+  margin-bottom: 80px;
+}
+
+.experience-heading > span {
+  display: inline-block;
+
+  margin-bottom: 18px;
+
+  color: #9a6935;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  letter-spacing: 4px;
+
+  text-transform: uppercase;
+}
+
+.experience-heading h2 {
+  margin: 0;
+
+  color: #2b1712;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: clamp(42px, 5vw, 68px);
+
+  font-weight: 500;
+
+  line-height: 0.95;
+
+  letter-spacing: -1.5px;
+}
+
+.experience-heading h2 em {
+  color: #9a6935;
+
+  font-style: italic;
+}
+
+
+/* =========================================================
+   TIMELINE CONTAINER
+   ========================================================= */
+
+.experience-timeline {
   position: relative;
 
   width: 100%;
-  height: 480px;
 
   box-sizing: border-box;
-
-  display: flex;
-
-  flex-direction: column;
-
-  justify-content: center;
-  align-items: flex-start;
-
-  padding: 55px 45px;
-
-  border:
-    1px solid rgba(236, 213, 176, 0.20);
-
-  border-radius: 24px;
-
-  text-align: left;
 }
 
 
-/* =========================================
-   PROFESSIONAL EXPERIENCE
-========================================= */
+/* =========================================================
+   CENTER TIMELINE LINE
+   ========================================================= */
 
-.experience-cover-inner .eyebrow {
-  margin: 0 0 20px;
-
-  color: rgba(245, 238, 228, 0.76);
-
-  font-size: 13px;
-
-  font-weight: 700;
-
-  letter-spacing: 0.14em;
-
-  text-transform: uppercase;
-}
-
-
-/* =========================================
-   MAIN HEADING
-========================================= */
-
-.experience-cover-inner h2 {
-  max-width: 520px;
-
-  margin: 0;
-
-  color: #fffaf0;
-
-  font-family:
-    "Playfair Display",
-    Georgia,
-    serif;
-
-  font-size:
-    clamp(3.2rem, 5vw, 5rem);
-
-  font-weight: 700;
-
-  line-height: 0.92;
-
-  letter-spacing: -0.065em;
-}
-
-
-/* =========================================
-   A BRIEF RECORD
-========================================= */
-
-.experience-cover-stamp {
-  margin-top: 28px;
-
-  padding: 9px 17px 8px;
-
-  border:
-    1px solid rgba(230, 190, 120, 0.72);
-
-  border-radius: 999px;
-
-  color: #e9d0a5;
-
-  font-size: 11px;
-
-  font-weight: 700;
-
-  letter-spacing: 0.16em;
-
-  text-transform: uppercase;
-}
-
-
-/* =========================================
-   OPEN BUTTON
-========================================= */
-
-.experience-open-btn {
-  margin-top: 32px;
-
-  padding: 16px 28px;
-
-  border:
-    1px solid rgba(224, 180, 93, 0.65);
-
-  border-radius: 999px;
-
-  background:
-    linear-gradient(
-      180deg,
-      #c38e4d 0%,
-      #906029 100%
-    );
-
-  color: #fffaf1;
-
-  font-size: 13px;
-
-  font-weight: 800;
-
-  letter-spacing: 0.10em;
-
-  text-transform: uppercase;
-
-  cursor: pointer;
-
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
-
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease;
-}
-
-
-.experience-open-btn:hover {
-  transform: translateY(-2px);
-
-  box-shadow:
-    0 14px 28px rgba(129, 78, 31, 0.30);
-}
-
-
-/* =========================================
-   PAPER CLIP
-========================================= */
-
-.experience-paperclip {
+.experience-line {
   position: absolute;
 
-  top: -10px;
+  top: 0;
+  bottom: 0;
+
   left: 50%;
 
-  width: 18px;
-  height: 92px;
+  width: 1px;
 
-  border:
-    3px solid rgba(220, 185, 122, 0.95);
-
-  border-radius: 14px;
-
-  transform:
-    translateX(-50%)
-    rotate(9deg);
+  transform: translateX(-50%);
 
   background:
     linear-gradient(
-      180deg,
-      rgba(168, 120, 53, 0.15),
-      rgba(47, 29, 22, 0)
+      to bottom,
+      rgba(184, 137, 66, 0.35),
+      rgba(154, 105, 53, 0.75)
     );
 
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.05);
+  z-index: 1;
+
+  pointer-events: none;
 }
 
 
-.experience-paperclip::before {
-  content: "";
+/* =========================================================
+   LINE GLOW
+   ========================================================= */
 
+.experience-line-glow {
   position: absolute;
 
-  inset: 0;
+  left: -2px;
 
-  border:
-    2px solid rgba(220, 185, 122, 0.62);
+  bottom: 0;
 
-  border-radius: 12px;
+  width: 5px;
 
-  transform:
-    scale(0.76)
-    translate(2px, 10px);
+  height: 35%;
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(184, 137, 66, 0.40),
+      transparent
+    );
+
+  filter: blur(3px);
+
+  opacity: 0.7;
+
+  pointer-events: none;
 }
 
 
-.experience-paperclip::after {
-  display: none;
-}
+/* =========================================================
+   BOTTOM TIMELINE DOT
+   ========================================================= */
 
+.experience-line-dot {
+  position: absolute;
 
-/* =========================================
-   MODAL OVERLAY
-========================================= */
+  left: 50%;
 
-body .exp-modal-overlay {
-  position: fixed;
+  bottom: 0;
 
-  inset: 0;
+  width: 12px;
 
-  width: 100vw;
-  height: 100dvh;
+  height: 12px;
 
-  display: flex;
+  transform: translate(-50%, 50%);
 
-  align-items: center;
-  justify-content: center;
+  border-radius: 50%;
 
-  padding: 24px;
-
-  box-sizing: border-box;
-
-  z-index: 9999;
-
-  background: rgba(36, 25, 20, 0.28);
-
-  backdrop-filter: blur(5px);
-}
-
-
-/* =========================================
-   EXPERIENCE FILE / MODAL
-========================================= */
-
-.experience-file {
-  position: relative;
-
-  display: block;
-
-  width:
-    min(950px, calc(100vw - 48px));
-
-  max-height:
-    calc(100dvh - 48px);
-
-  margin: 0 auto;
-
-  box-sizing: border-box;
-
-  padding: 40px 48px;
-
-  background: #2f1d16;
-
-  border:
-    1px solid rgba(168, 120, 53, 0.55);
-
-  border-radius: 28px;
+  background: #b88942;
 
   box-shadow:
-    0 24px 48px rgba(29, 19, 15, 0.3);
+    0 0 0 4px rgba(184, 137, 66, 0.12),
+    0 0 18px rgba(184, 137, 66, 0.45);
 
-  overflow-y: auto;
-  overflow-x: hidden;
+  z-index: 10;
+
+  animation:
+    experienceDotGlow
+    2.5s
+    ease-in-out
+    infinite;
+}
+
+@keyframes experienceDotGlow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 4px rgba(184, 137, 66, 0.10),
+      0 0 12px rgba(184, 137, 66, 0.30);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 7px rgba(184, 137, 66, 0.15),
+      0 0 25px rgba(184, 137, 66, 0.60);
+  }
 }
 
 
-/* =========================================
-   MODAL HEADER
-========================================= */
+/* =========================================================
+   EXPERIENCE ITEM
+   ========================================================= */
 
-.experience-file-header {
+.experience-item {
+  position: relative;
+
   display: grid;
 
   grid-template-columns:
-    auto 1fr auto;
+    minmax(0, 1fr)
+    180px
+    minmax(0, 1fr);
 
-  align-items: center;
+  min-height: 210px;
 
-  gap: 14px;
+  align-items: start;
 
-  padding:
-    8px 10px 12px;
+  z-index: 2;
 
-  border-bottom:
-    1px solid rgba(168, 120, 53, 0.5);
-}
+  box-sizing: border-box;
 
-
-/* =========================================
-   BACK / NAVIGATION BUTTONS
-========================================= */
-
-.experience-back-btn,
-.experience-nav-btn {
-  display: inline-flex;
-
-  align-items: center;
-  justify-content: center;
-
-  gap: 8px;
-
-  border:
-    1px solid rgba(168, 120, 53, 0.55);
-
-  background: #3a241b;
-
-  color: #fff8ef;
-
-  border-radius: 999px;
-
-  cursor: pointer;
-
-  transition:
-    transform 160ms ease,
-    border-color 160ms ease,
-    background 160ms ease;
-}
-
-
-/* Back button */
-
-.experience-back-btn {
-  padding: 8px 14px;
-
-  font-size: 12px;
-
-  font-weight: 700;
-
-  letter-spacing: 0.08em;
-
-  text-transform: uppercase;
-}
-
-
-/* Navigation */
-
-.experience-nav {
-  display: inline-flex;
-
-  align-items: center;
-
-  gap: 8px;
-}
-
-
-/* Navigation button */
-
-.experience-nav-btn {
-  width: 38px;
-  height: 38px;
-
-  font-size: 13px;
-}
-
-
-/* Disabled */
-
-.experience-nav-btn:disabled {
-  opacity: 0.35;
-
-  cursor: not-allowed;
-}
-
-
-/* Hover */
-
-.experience-back-btn:hover,
-.experience-nav-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-
-  border-color: #a87835;
-
-  background: #4a2f22;
-}
-
-
-/* =========================================
-   PAGE INDICATOR
-========================================= */
-
-.experience-page-indicator {
-  justify-self: center;
-
-  color: #e9d0a5;
-
-  font-size: 11px;
-
-  font-weight: 700;
-
-  letter-spacing: 0.15em;
-
-  text-transform: uppercase;
-}
-
-
-/* =========================================
-   EXPERIENCE PAGE
-========================================= */
-
-.experience-page {
-  position: relative;
-
-  display: flex;
-
-  min-height: 330px;
-
-  flex-direction: column;
-
-  padding:
-    clamp(20px, 3vw, 34px)
-    clamp(18px, 3vw, 30px)
-    12px;
+  opacity: 0;
 
   animation:
-    experience-page-in
-    500ms
+    experienceAppear
+    0.7s
     ease
-    both;
+    forwards;
 }
 
 
-/* Next page */
+/* =========================================================
+   STAGGERED ANIMATION
+   ========================================================= */
 
-.experience-page--next {
-  --page-translate: 18px;
+.experience-item:nth-child(2) {
+  animation-delay: 0.1s;
 }
 
-
-/* Previous page */
-
-.experience-page--prev {
-  --page-translate: -18px;
+.experience-item:nth-child(3) {
+  animation-delay: 0.2s;
 }
 
+.experience-item:nth-child(4) {
+  animation-delay: 0.3s;
+}
 
-/* Page animation */
+.experience-item:nth-child(5) {
+  animation-delay: 0.4s;
+}
 
-@keyframes experience-page-in {
+.experience-item:nth-child(6) {
+  animation-delay: 0.5s;
+}
 
+.experience-item:nth-child(7) {
+  animation-delay: 0.6s;
+}
+
+@keyframes experienceAppear {
   from {
     opacity: 0;
 
     transform:
-      translateX(
-        var(--page-translate, 0)
-      )
-      scale(0.985);
+      translateY(22px);
   }
 
   to {
     opacity: 1;
 
     transform:
-      translateX(0)
-      scale(1);
+      translateY(0);
   }
 }
 
 
-/* =========================================
-   PAGE TAG
-========================================= */
+/* =========================================================
+   LEFT SIDE
+   ========================================================= */
 
-.experience-page-tag {
-  display: inline-flex;
+.experience-role {
+  padding:
+    5px
+    45px
+    60px
+    0;
 
-  width: fit-content;
+  text-align: right;
+
+  box-sizing: border-box;
+}
+
+.experience-role h3 {
+  margin: 0;
+
+  color: #2b1712;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      20px,
+      2vw,
+      27px
+    );
+
+  font-weight: 500;
+
+  line-height: 1.15;
+
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+
+/* =========================================================
+   COMPANY LINK
+   ========================================================= */
+
+.experience-role a {
+  display: inline-block;
+
+  margin-top: 12px;
+
+  color: #9a6935;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  line-height: 1.4;
+
+  letter-spacing: 1.1px;
+
+  text-decoration: none !important;
+
+  border: none !important;
+
+  border-bottom: none !important;
+
+  outline: none;
+
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.experience-role a:hover {
+  color: #2b1712;
+
+  transform:
+    translateX(-5px);
+
+  text-decoration: none !important;
+
+  border: none !important;
+}
+
+.experience-item:hover
+.experience-role h3 {
+  color: #9a6935;
+
+  transform:
+    translateX(-4px);
+}
+
+
+/* =========================================================
+   CENTER YEAR
+   ========================================================= */
+
+.experience-year {
+  position: relative;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: flex-start;
+
+  background: transparent;
+
+  z-index: 5;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   YEAR CIRCLE
+   ========================================================= */
+
+.experience-year span {
+  position: relative;
+
+  display: flex;
 
   align-items: center;
 
-  padding: 6px 10px;
+  justify-content: center;
+
+  width: 74px;
+
+  height: 74px;
+
+  margin-top: -5px;
+
+  border-radius: 50%;
+
+  background: #fff9f0;
 
   border:
-    1px solid rgba(230, 190, 120, 0.5);
+    2px
+    solid
+    #b88942;
 
-  border-radius: 999px;
+  color: #8b5e34;
 
-  background:
-    rgba(168, 120, 53, 0.14);
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
 
-  color: #e9d0a5;
+  font-size: 16px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.5px;
+
+  box-sizing: border-box;
+
+  box-shadow:
+    0 0 0 7px
+      rgba(184, 137, 66, 0.07),
+
+    0 8px 22px
+      rgba(43, 23, 18, 0.10);
+
+  transition:
+    transform 0.3s ease,
+    background 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+
+/* =========================================================
+   YEAR HOVER
+   ========================================================= */
+
+.experience-item:hover
+.experience-year span {
+  transform:
+    scale(1.08);
+
+  background: #2b1712;
+
+  color: #fff9f0;
+
+  box-shadow:
+    0 0 0 8px
+      rgba(184, 137, 66, 0.12),
+
+    0 0 25px
+      rgba(184, 137, 66, 0.40);
+}
+
+
+/* =========================================================
+   RIGHT SIDE
+   ========================================================= */
+
+.experience-info {
+  padding:
+    5px
+    0
+    60px
+    45px;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   DATE
+   ========================================================= */
+
+.experience-info small {
+  display: block;
+
+  margin-bottom: 13px;
+
+  color: #9a6935;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
 
   font-size: 10px;
 
   font-weight: 700;
 
-  letter-spacing: 0.14em;
+  letter-spacing: 1.8px;
 
   text-transform: uppercase;
 }
 
 
-/* =========================================
-   PAGE HEADING
-========================================= */
+/* =========================================================
+   DESCRIPTION
+   ========================================================= */
 
-.experience-page h3 {
-  margin:
-    16px 0 8px;
+.experience-info p {
+  max-width: 430px;
 
-  color: #fff8ef;
+  margin: 0;
+
+  color: #5a4439;
 
   font-family:
-    "Playfair Display",
-    Georgia,
-    serif;
+    Arial,
+    Helvetica,
+    sans-serif;
 
-  font-size:
-    clamp(1.8rem, 3vw, 2.8rem);
+  font-size: 14px;
 
-  line-height: 1.08;
-
-  letter-spacing: -0.06em;
+  line-height: 1.8;
 }
 
 
-/* =========================================
-   COMPANY
-========================================= */
+/* =========================================================
+   VISIT LINK
+   ========================================================= */
 
-.experience-company {
-  margin:
-    0 0 14px;
+.experience-link {
+  display: inline-block;
 
-  color: #e9d0a5;
+  margin-top: 17px;
 
-  font-size: 15px;
+  color: #2b1712;
 
-  font-weight: 700;
-}
-
-
-/* =========================================
-   META INFORMATION
-========================================= */
-
-.experience-meta {
-  display: flex;
-
-  flex-wrap: wrap;
-
-  gap: 18px;
-
-  margin:
-    0 0 14px;
-
-  color:
-    rgba(255, 248, 239, 0.76);
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
 
   font-size: 11px;
 
-  font-weight: 600;
+  font-weight: 700;
 
-  letter-spacing: 0.04em;
+  letter-spacing: 1.3px;
 
-  text-transform: uppercase;
+  text-decoration: none !important;
+
+  border: none !important;
+
+  border-bottom: none !important;
+
+  outline: none;
+
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.experience-link:hover {
+  color: #9a6935;
+
+  transform:
+    translateX(5px);
+
+  text-decoration: none !important;
+
+  border: none !important;
 }
 
 
-.experience-meta span {
-  display: inline-flex;
+/* =========================================================
+   HORIZONTAL SUBTLE SEPARATOR
+   ========================================================= */
 
-  align-items: center;
+.experience-item:not(:last-child)::after {
+  content: "";
 
-  gap: 8px;
+  position: absolute;
+
+  left:
+    calc(50% - 260px);
+
+  right:
+    calc(50% - 260px);
+
+  bottom: 0;
+
+  height: 1px;
+
+  background:
+    rgba(
+      154,
+      105,
+      53,
+      0.18
+    );
+
+  z-index: -1;
 }
 
 
-/* =========================================
-   HIGHLIGHTS
-========================================= */
+/* =========================================================
+   TABLET
+   ========================================================= */
 
-.experience-highlights {
-  margin: 0;
+@media (max-width: 900px) {
 
-  padding-left: 1.3rem;
+  .experience-inner {
+    width: min(
+      92%,
+      720px
+    );
+  }
 
-  color: #fff8ef;
+  .experience-item {
+    grid-template-columns:
+      minmax(0, 1fr)
+      140px
+      minmax(0, 1fr);
+  }
 
-  font-size: 15px;
+  .experience-role {
+    padding-right: 25px;
+  }
 
-  line-height: 1.9;
+  .experience-info {
+    padding-left: 25px;
+  }
+
+  .experience-year span {
+    width: 65px;
+
+    height: 65px;
+
+    font-size: 14px;
+  }
 }
 
 
-.experience-highlights li + li {
-  margin-top: 4px;
-}
+/* =========================================================
+   MOBILE
+   ========================================================= */
 
+@media (max-width: 700px) {
 
-/* Links */
-
-.experience-highlights a {
-  color: #e9c27a;
-
-  text-decoration: underline;
-}
-
-
-/* =========================================
-   MOBILE RESPONSIVE
-========================================= */
-
-@media (max-width: 720px) {
-
-  .experience-section {
-    width: 100%;
-
-    min-height: 540px;
-
-    margin-top: 10px;
-
+  .experience {
     padding:
-      45px 12px 30px;
-
-    background: transparent;
-
-    border-radius: 0;
+      60px
+      0
+      80px;
   }
 
-
-  /* Mobile EXPERIENCE text */
-
-  .experience-section::before {
-    left: 25px;
-
-    top: 5px;
-
-    font-size: 10px;
-
-    padding: 0;
-
-    background: transparent;
-  }
-
-
-  /* Main card */
-
-  .experience-cover {
-    width: 100%;
-
-    height: 430px;
-
-    min-height: 430px;
-
-    padding: 22px;
-
-    border-radius: 24px;
-  }
-
-
-  /* Inner frame */
-
-  .experience-cover-inner {
-    height: 350px;
-
-    padding:
-      35px 28px;
-
-    border-radius: 20px;
+  .experience-inner {
+    width:
+      calc(100% - 35px);
   }
 
 
   /* Heading */
 
-  .experience-cover-inner h2 {
-    max-width: 300px;
+  .experience-heading {
+    margin-bottom: 60px;
+  }
 
-    font-size: 3rem;
+  .experience-heading h2 {
+    font-size: 43px;
+
+    line-height: 0.98;
   }
 
 
-  /* Stamp */
+  /* Timeline moves left */
 
-  .experience-cover-stamp {
-    margin-top: 20px;
+  .experience-line {
+    left: 28px;
+
+    transform:
+      translateX(-50%);
+  }
+
+  .experience-line-dot {
+    left: 28px;
   }
 
 
-  /* Button */
+  /* Experience item */
 
-  .experience-open-btn {
-    margin-top: 24px;
+  .experience-item {
+    display: block;
 
-    padding:
-      13px 20px;
+    min-height: auto;
+
+    padding-left: 65px;
+
+    margin-bottom: 65px;
+  }
+
+
+  /* Role */
+
+  .experience-role {
+    padding: 0;
+
+    margin-bottom: 18px;
+
+    text-align: left;
+  }
+
+  .experience-role h3 {
+    font-size: 23px;
+  }
+
+  .experience-role a {
+    font-size: 11px;
+  }
+
+
+  /* Year */
+
+  .experience-year {
+    position: absolute;
+
+    top: 0;
+
+    left: 28px;
+
+    width: 0;
+
+    transform:
+      translateX(-50%);
+  }
+
+  .experience-year span {
+    width: 55px;
+
+    height: 55px;
+
+    margin: 0;
 
     font-size: 11px;
   }
 
 
-  /* Paperclip */
+  /* Description */
 
-  .experience-paperclip {
-    height: 72px;
+  .experience-info {
+    padding: 0;
+  }
+
+  .experience-info p {
+    max-width: none;
+
+    font-size: 13px;
+
+    line-height: 1.75;
   }
 
 
-  /* Modal */
+  /* Hide desktop separators */
 
-  body .exp-modal-overlay {
-    padding: 12px;
+  .experience-item:not(:last-child)::after {
+    display: none;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 430px) {
+
+  .experience-heading h2 {
+    font-size: 38px;
   }
 
-
-  .experience-file {
-    width:
-      calc(100vw - 24px);
-
-    max-height:
-      calc(100dvh - 24px);
-
-    padding:
-      24px 20px;
+  .experience-item {
+    padding-left: 58px;
   }
 
-
-  /* Header */
-
-  .experience-file-header {
-    grid-template-columns: 1fr;
-
-    justify-items: center;
+  .experience-line {
+    left: 22px;
   }
 
-
-  .experience-back-btn {
-    justify-self: start;
+  .experience-line-dot {
+    left: 22px;
   }
 
-
-  .experience-page-indicator {
-    order: 3;
+  .experience-year {
+    left: 22px;
   }
 
+  .experience-year span {
+    width: 48px;
 
-  .experience-nav {
-    justify-self: end;
+    height: 48px;
+
+    font-size: 10px;
   }
 
+  .experience-role h3 {
+    font-size: 21px;
+  }
 
-  /* Meta */
+  .experience-info p {
+    font-size: 12.5px;
+  }
+}
 
-  .experience-meta {
-    flex-direction: column;
 
-    gap: 8px;
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .experience-item {
+    animation: none;
+
+    opacity: 1;
+  }
+
+  .experience-line-dot {
+    animation: none;
+  }
+
+  .experience-role h3,
+  .experience-role a,
+  .experience-link,
+  .experience-year span {
+    transition: none;
   }
 }

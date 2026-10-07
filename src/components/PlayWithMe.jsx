@@ -3,7 +3,16 @@ import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import "./PlayWithMe.css";
 
+import mansiProfile from "../assets/images/mansi.png";
+import manseeProfile from "../assets/images/mansee.jpg";
+import { Link } from "react-router-dom";
+import GameSelector from "./GameSelector";
+import TicTacToe from "./TicTacToe";
+import { chooseComputerMove, getWinner } from "./ticTacToeLogic";
+
 const CHAT_TIMEOUT_MS = 30000;
+const AI_MOVE_DELAY_MS = 450;
+const TIC_TAC_TOE_DELAY_MS = 650;
 
 const createChatId = () =>
   typeof crypto !== "undefined" && crypto.randomUUID
@@ -11,167 +20,438 @@ const createChatId = () =>
     : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
 const CHAT_API_URL =
-  import.meta.env.VITE_CHAT_API_URL || "http://127.0.0.1:8000/api/chat/";
+  import.meta.env.VITE_CHAT_API_URL ||
+  "http://127.0.0.1:8000/api/chat/";
 
-const AI_MOVE_DELAY_MS = 450;
-const PIECE_VALUES = { p: 100, n: 320, b: 330, r: 500, q: 900, k: 20000 };
+/* =====================================================
+   CHESS AI
+===================================================== */
+
+const PIECE_VALUES = {
+  p: 100,
+  n: 320,
+  b: 330,
+  r: 500,
+  q: 900,
+  k: 20000,
+};
+
+/*
+  Positive score = good for Black
+  Negative score = good for White
+*/
 
 const evaluatePosition = (position) => {
   let score = 0;
+
   for (const row of position.board()) {
     for (const piece of row) {
-      if (piece) score += piece.color === "b" ? PIECE_VALUES[piece.type] : -PIECE_VALUES[piece.type];
+      if (piece) {
+        score +=
+          piece.color === "b"
+            ? PIECE_VALUES[piece.type]
+            : -PIECE_VALUES[piece.type];
+      }
     }
   }
+
   return score;
 };
 
-const minimax = (position, depth, alpha, beta) => {
+/*
+  Minimax AI.
+*/
+
+const minimax = (
+  position,
+  depth,
+  alpha,
+  beta,
+  aiColor
+) => {
   if (depth === 0 || position.isGameOver()) {
-    if (position.isCheckmate()) return position.turn() === "w" ? 100000 : -100000;
-    return evaluatePosition(position);
+    if (position.isCheckmate()) {
+      return position.turn() === aiColor
+        ? -100000
+        : 100000;
+    }
+
+    const evaluation = evaluatePosition(position);
+
+    return aiColor === "b"
+      ? evaluation
+      : -evaluation;
   }
 
-  const aiTurn = position.turn() === "b";
-  let bestScore = aiTurn ? -Infinity : Infinity;
-  for (const move of position.moves({ verbose: true })) {
+  const aiTurn = position.turn() === aiColor;
+
+  let bestScore = aiTurn
+    ? -Infinity
+    : Infinity;
+
+  for (const move of position.moves({
+    verbose: true,
+  })) {
     const nextPosition = new Chess(position.fen());
+
     nextPosition.move(move);
-    const score = minimax(nextPosition, depth - 1, alpha, beta);
+
+    const score = minimax(
+      nextPosition,
+      depth - 1,
+      alpha,
+      beta,
+      aiColor
+    );
+
     if (aiTurn) {
-      bestScore = Math.max(bestScore, score);
-      alpha = Math.max(alpha, score);
+      bestScore = Math.max(
+        bestScore,
+        score
+      );
+
+      alpha = Math.max(
+        alpha,
+        score
+      );
     } else {
-      bestScore = Math.min(bestScore, score);
-      beta = Math.min(beta, score);
+      bestScore = Math.min(
+        bestScore,
+        score
+      );
+
+      beta = Math.min(
+        beta,
+        score
+      );
     }
-    if (beta <= alpha) break;
+
+    if (beta <= alpha) {
+      break;
+    }
   }
+
   return bestScore;
 };
 
-const getBestAiMove = (position) => {
+/*
+  Find AI's best move.
+*/
+
+const getBestAiMove = (
+  position,
+  aiColor
+) => {
+  const legalMoves = position.moves({
+    verbose: true,
+  });
+
+  if (!legalMoves.length) {
+    return null;
+  }
+
   let bestScore = -Infinity;
+
   const bestMoves = [];
-  for (const move of position.moves({ verbose: true })) {
-    const nextPosition = new Chess(position.fen());
+
+  for (const move of legalMoves) {
+    const nextPosition =
+      new Chess(position.fen());
+
     nextPosition.move(move);
-    const score = minimax(nextPosition, 2, -Infinity, Infinity);
+
+    const score = minimax(
+      nextPosition,
+      2,
+      -Infinity,
+      Infinity,
+      aiColor
+    );
+
     if (score > bestScore) {
       bestScore = score;
+
       bestMoves.length = 0;
+
       bestMoves.push(move);
     } else if (score === bestScore) {
       bestMoves.push(move);
     }
   }
-  return bestMoves[Math.floor(Math.random() * bestMoves.length)];
+
+  return bestMoves[
+    Math.floor(
+      Math.random() *
+        bestMoves.length
+    )
+  ];
 };
 
+/* =====================================================
+   MAIN COMPONENT
+===================================================== */
+
 export default function PlayWithMe() {
-  const [game, setGame] = useState(new Chess());
+  /* =====================================================
+     CHESS STATE
+  ===================================================== */
+
+  const [game, setGame] = useState(
+    () => new Chess()
+  );
+
+  /*
+    Player color:
+    "w" = You are White
+    "b" = You are Black
+  */
+
+  const [playerColor, setPlayerColor] =
+    useState("w");
 
   const [boardOrientation, setBoardOrientation] =
     useState("white");
-  const [isComputerThinking, setIsComputerThinking] = useState(false);
 
-  const [message, setMessage] = useState("");
-  const chatInFlightRef = useRef(false);
-  const chatAbortControllerRef = useRef(null);
-  const aiMoveTimerRef = useRef(null);
-  const isMountedRef = useRef(false);
+  const [
+    isComputerThinking,
+    setIsComputerThinking,
+  ] = useState(false);
 
-  const [messages, setMessages] = useState([
-    {
-      id: createChatId(),
-      sender: "bot",
-      text: "Hello there! 👋 I'm Mansi. Want to play a quick game?"
-    }
-  ]);
+  const [moveHistory, setMoveHistory] =
+    useState([]);
+
+  const [selectedGame, setSelectedGame] = useState("chess");
+  const [ticTacToeBoard, setTicTacToeBoard] = useState(() => Array(9).fill(null));
+  const [ticTacToeThinking, setTicTacToeThinking] = useState(false);
+  const [ticTacToeResult, setTicTacToeResult] = useState(null);
+  const [ticTacToeWinningCells, setTicTacToeWinningCells] = useState([]);
+  const [ticTacToeScore, setTicTacToeScore] = useState({ player: 0, computer: 0, ties: 0 });
+
+  /* =====================================================
+     CHAT STATE
+  ===================================================== */
+
+  const [message, setMessage] =
+    useState("");
+
+  const [messages, setMessages] =
+    useState([
+      {
+        id: createChatId(),
+        sender: "bot",
+        text: "Hello there!",
+      },
+    ]);
+
+  /* =====================================================
+     REFS
+  ===================================================== */
+
+  const chatInFlightRef =
+    useRef(false);
+
+  const chatAbortControllerRef =
+    useRef(null);
+
+  const aiMoveTimerRef =
+    useRef(null);
+
+  const ticTacToeTimerRef = useRef(null);
+
+  const movesListRef = useRef(null);
+
+  const isMountedRef =
+    useRef(false);
+
+  /* =====================================================
+     COMPONENT MOUNT
+  ===================================================== */
 
   useEffect(() => {
     isMountedRef.current = true;
 
     return () => {
       isMountedRef.current = false;
+
       chatAbortControllerRef.current?.abort();
-      window.clearTimeout(aiMoveTimerRef.current);
+
+      window.clearTimeout(
+        aiMoveTimerRef.current
+      );
+
+      window.clearTimeout(ticTacToeTimerRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    movesListRef.current?.scrollTo({
+      top: movesListRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [moveHistory]);
 
   /* =====================================================
      COMPUTER MOVE
   ===================================================== */
 
   useEffect(() => {
-    if (game.isGameOver() || game.turn() !== "b") {
+    if (game.isGameOver()) {
       setIsComputerThinking(false);
       return undefined;
     }
 
-    const positionBeforeMove = game.fen();
+    if (game.turn() === playerColor) {
+      setIsComputerThinking(false);
+      return undefined;
+    }
+
+    const aiColor =
+      playerColor === "w"
+        ? "b"
+        : "w";
+
+    const positionBeforeMove =
+      game.fen();
+
     setIsComputerThinking(true);
-    aiMoveTimerRef.current = window.setTimeout(() => {
-      setGame((currentGame) => {
-        // Do not apply a stale AI move after a new game starts.
+
+    aiMoveTimerRef.current =
+      window.setTimeout(() => {
+        const currentGame =
+          new Chess(positionBeforeMove);
+
         if (
-          currentGame.fen() !== positionBeforeMove ||
-          currentGame.turn() !== "b" ||
-          currentGame.isGameOver()
+          currentGame.isGameOver() ||
+          currentGame.turn() === playerColor
         ) {
-          return currentGame;
+          setIsComputerThinking(false);
+          return;
         }
 
-        const nextGame = new Chess(currentGame.fen());
-        const bestMove = getBestAiMove(nextGame);
-        if (bestMove) nextGame.move(bestMove);
-        return nextGame;
-      });
-      setIsComputerThinking(false);
-    }, AI_MOVE_DELAY_MS);
+        const bestMove =
+          getBestAiMove(
+            currentGame,
+            aiColor
+          );
 
-    return () => window.clearTimeout(aiMoveTimerRef.current);
-  }, [game]);
+        if (!bestMove) {
+          setIsComputerThinking(false);
+          return;
+        }
 
+        const playedMove =
+          currentGame.move(bestMove);
+
+        if (!playedMove) {
+          setIsComputerThinking(false);
+          return;
+        }
+
+        setMoveHistory(
+          (previous) => [
+            ...previous,
+            {
+              color: playedMove.color,
+              san: playedMove.san,
+            },
+          ]
+        );
+
+        console.log(
+          "AI move:",
+          playedMove.san
+        );
+
+        setGame(currentGame);
+
+        setIsComputerThinking(false);
+      }, AI_MOVE_DELAY_MS);
+
+    return () => {
+      window.clearTimeout(
+        aiMoveTimerRef.current
+      );
+    };
+  }, [game, playerColor]);
 
   /* =====================================================
      PLAYER MOVE
   ===================================================== */
 
-  const handlePieceDrop = (
+  const handlePieceDrop = ({
     sourceSquare,
-    targetSquare
-  ) => {
-    // The visitor always plays White. Flipping only changes the view.
-    if (game.turn() !== "w" || game.isGameOver() || isComputerThinking) {
+    targetSquare,
+    piece,
+  }) => {
+    console.log(
+      "Piece moved:",
+      {
+        piece,
+        sourceSquare,
+        targetSquare,
+      }
+    );
+
+    if (game.turn() !== playerColor) {
+      console.log(
+        "Not player's turn"
+      );
+
+      return false;
+    }
+
+    if (game.isGameOver()) {
+      return false;
+    }
+
+    if (isComputerThinking) {
+      return false;
+    }
+
+    if (
+      !sourceSquare ||
+      !targetSquare
+    ) {
       return false;
     }
 
     try {
-      const newGame = new Chess(
-        game.fen()
-      );
+      const newGame =
+        new Chess(game.fen());
 
-      const move = newGame.move({
-        from: sourceSquare,
-        to: targetSquare,
-        promotion: "q"
-      });
+      const move =
+        newGame.move({
+          from: sourceSquare,
+          to: targetSquare,
+          promotion: "q",
+        });
 
-      // Illegal move
       if (!move) {
+        console.log(
+          "Illegal move"
+        );
+
         return false;
       }
 
+      setMoveHistory(
+        (previous) => [
+          ...previous,
+          {
+            color: move.color,
+            san: move.san,
+          },
+        ]
+      );
+
+      console.log(
+        "Valid move:",
+        move.san
+      );
+
       setGame(newGame);
 
-      // Game ended after player's move
-      if (newGame.isGameOver()) {
-        return true;
-      }
-
       return true;
-
     } catch (error) {
       console.error(
         "Chess move error:",
@@ -182,221 +462,559 @@ export default function PlayWithMe() {
     }
   };
 
-
   /* =====================================================
      NEW GAME
   ===================================================== */
 
   const handleNewGame = () => {
-    window.clearTimeout(aiMoveTimerRef.current);
-    setGame(new Chess());
-    setBoardOrientation("white");
+    window.clearTimeout(
+      aiMoveTimerRef.current
+    );
+
+    const newGame =
+      new Chess();
+
+    setGame(newGame);
+
+    setMoveHistory([]);
+
+    setBoardOrientation(
+      playerColor === "w"
+        ? "white"
+        : "black"
+    );
+
     setIsComputerThinking(false);
-  };
 
-
-  /* =====================================================
-     FLIP BOARD
-  ===================================================== */
-
-  const handleFlipBoard = () => {
-    setBoardOrientation((current) =>
-      current === "white"
-        ? "black"
-        : "white"
+    console.log(
+      "New game started"
     );
   };
 
+  /* =====================================================
+     FLIP BOARD / CHANGE PLAYER
+  ===================================================== */
+
+  const handleFlipBoard = () => {
+    window.clearTimeout(
+      aiMoveTimerRef.current
+    );
+
+    const newPlayerColor =
+      playerColor === "w"
+        ? "b"
+        : "w";
+
+    const newGame =
+      new Chess();
+
+    setPlayerColor(
+      newPlayerColor
+    );
+
+    setBoardOrientation(
+      newPlayerColor === "w"
+        ? "white"
+        : "black"
+    );
+
+    setGame(newGame);
+
+    setMoveHistory([]);
+
+    setIsComputerThinking(false);
+
+    console.log(
+      "Player is now:",
+      newPlayerColor === "w"
+        ? "White"
+        : "Black"
+    );
+  };
+
+  const handleTicTacToeNewGame = () => {
+    window.clearTimeout(ticTacToeTimerRef.current);
+    setTicTacToeBoard(Array(9).fill(null));
+    setTicTacToeThinking(false);
+    setTicTacToeResult(null);
+    setTicTacToeWinningCells([]);
+  };
+
+  const finishTicTacToe = (nextBoard, outcome) => {
+    const winner = getWinner(nextBoard);
+    setTicTacToeBoard(nextBoard);
+    setTicTacToeResult(outcome);
+    setTicTacToeWinningCells(winner?.line || []);
+    setTicTacToeScore((previous) => ({
+      ...previous,
+      player: previous.player + (outcome === "X" ? 1 : 0),
+      computer: previous.computer + (outcome === "O" ? 1 : 0),
+      ties: previous.ties + (outcome === "draw" ? 1 : 0),
+    }));
+  };
+
+  const handleTicTacToeCellClick = (index) => {
+    if (ticTacToeBoard[index] || ticTacToeThinking || ticTacToeResult) return;
+
+    const playerBoard = [...ticTacToeBoard];
+    playerBoard[index] = "X";
+    const playerWinner = getWinner(playerBoard);
+
+    if (playerWinner) {
+      finishTicTacToe(playerBoard, "X");
+      return;
+    }
+
+    if (playerBoard.every(Boolean)) {
+      finishTicTacToe(playerBoard, "draw");
+      return;
+    }
+
+    setTicTacToeBoard(playerBoard);
+    setTicTacToeThinking(true);
+    ticTacToeTimerRef.current = window.setTimeout(() => {
+      const computerIndex = chooseComputerMove(playerBoard);
+      const computerBoard = [...playerBoard];
+      computerBoard[computerIndex] = "O";
+      const computerWinner = getWinner(computerBoard);
+
+      if (computerWinner) {
+        finishTicTacToe(computerBoard, "O");
+      } else if (computerBoard.every(Boolean)) {
+        finishTicTacToe(computerBoard, "draw");
+      } else {
+        setTicTacToeBoard(computerBoard);
+      }
+      setTicTacToeThinking(false);
+    }, TIC_TAC_TOE_DELAY_MS);
+  };
 
   /* =====================================================
-     CHAT
+     CHAT SUBMIT
   ===================================================== */
-  const handleChatSubmit = async (e) => {
-    e.preventDefault();
 
-    const text = message.trim();
+  const handleChatSubmit =
+    async (e) => {
+      e.preventDefault();
 
-    if (!text || chatInFlightRef.current) return;
+      const text =
+        message.trim();
 
-    chatInFlightRef.current = true;
-    setMessages((previous) => [
-      ...previous,
-      {
-        id: createChatId(),
-        sender: "user",
-        text,
-      },
-    ]);
-    setMessage("");
+      if (
+        !text ||
+        chatInFlightRef.current
+      ) {
+        return;
+      }
 
-    // Preserve enough context for natural follow-up questions without sending
-    // the entire conversation with every request.
-    const history = messages.slice(-10).map(({ sender, text: content }) => ({
-      role: sender === "user" ? "user" : "model",
-      content,
-    }));
+      chatInFlightRef.current =
+        true;
 
-    const controller = new AbortController();
-    const botMessageId = createChatId();
-    let replyText = "";
-    let botMessageAdded = false;
-    let timedOut = false;
-    let timeoutId;
+      setMessages(
+        (previous) => [
+          ...previous,
+          {
+            id: createChatId(),
+            sender: "user",
+            text,
+          },
+        ]
+      );
 
-    chatAbortControllerRef.current = controller;
-    const timeoutMessage = "Sorry, my reply is taking too long. Please try again.";
-    const connectionErrorMessage =
-      "Sorry, I couldn't connect to my AI assistant right now.";
+      setMessage("");
 
-    const updateStreamedReply = (textChunk) => {
-      if (!isMountedRef.current) return;
+      const history =
+        messages
+          .slice(-10)
+          .map(
+            ({
+              sender,
+              text: content,
+            }) => ({
+              role:
+                sender === "user"
+                  ? "user"
+                  : "model",
+              content,
+            })
+          );
 
-      replyText += textChunk;
-      const shouldAddBotMessage = !botMessageAdded;
-      botMessageAdded = true;
+      const controller =
+        new AbortController();
 
-      setMessages((previous) => {
-        if (!shouldAddBotMessage) {
-          return previous.map((item) =>
-            item.id === botMessageId
-              ? { ...item, text: replyText }
-              : item
+      const botMessageId =
+        createChatId();
+
+      let replyText = "";
+
+      let botMessageAdded =
+        false;
+
+      let timedOut = false;
+
+      let timeoutId;
+
+      chatAbortControllerRef.current =
+        controller;
+
+      const timeoutMessage =
+        "Sorry, my reply is taking too long. Please try again.";
+
+      const connectionErrorMessage =
+        "Sorry, I couldn't connect to my AI assistant right now.";
+
+      /* =====================================================
+         UPDATE CHAT REPLY
+      ===================================================== */
+
+      const updateStreamedReply =
+        (textChunk) => {
+          if (
+            !isMountedRef.current
+          ) {
+            return;
+          }
+
+          replyText += textChunk;
+
+          const shouldAddBotMessage =
+            !botMessageAdded;
+
+          botMessageAdded =
+            true;
+
+          setMessages(
+            (previous) => {
+              if (
+                !shouldAddBotMessage
+              ) {
+                return previous.map(
+                  (item) =>
+                    item.id ===
+                    botMessageId
+                      ? {
+                          ...item,
+                          text: replyText,
+                        }
+                      : item
+                );
+              }
+
+              return [
+                ...previous,
+                {
+                  id: botMessageId,
+                  sender: "bot",
+                  text: replyText,
+                },
+              ];
+            }
+          );
+        };
+
+      /* =====================================================
+         SERVER SENT EVENT
+      ===================================================== */
+
+      const handleServerEvent =
+        (eventBlock) => {
+          let eventName =
+            "message";
+
+          const dataLines = [];
+
+          for (
+            const line of eventBlock.split(
+              /\r?\n/
+            )
+          ) {
+            if (
+              line.startsWith("event:")
+            ) {
+              eventName =
+                line
+                  .slice(6)
+                  .trim();
+            } else if (
+              line.startsWith("data:")
+            ) {
+              dataLines.push(
+                line
+                  .slice(5)
+                  .trim()
+              );
+            }
+          }
+
+          if (!dataLines.length) {
+            return false;
+          }
+
+          const data =
+            JSON.parse(
+              dataLines.join("\n")
+            );
+
+          if (
+            eventName === "token" &&
+            typeof data.text ===
+              "string"
+          ) {
+            updateStreamedReply(
+              data.text
+            );
+          } else if (
+            eventName === "error"
+          ) {
+            throw new Error(
+              typeof data.message ===
+                "string"
+                ? data.message
+                : "The chat service could not finish the reply."
+            );
+          }
+
+          return (
+            eventName === "done"
+          );
+        };
+
+      /* =====================================================
+         CHAT REQUEST
+      ===================================================== */
+
+      try {
+        const timeout =
+          new Promise(
+            (_, reject) => {
+              timeoutId =
+                window.setTimeout(
+                  () => {
+                    timedOut = true;
+
+                    controller.abort();
+
+                    reject(
+                      new Error(
+                        "Chat request timed out"
+                      )
+                    );
+                  },
+                  CHAT_TIMEOUT_MS
+                );
+            }
+          );
+
+        const request =
+          fetch(
+            CHAT_API_URL,
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+
+              body: JSON.stringify({
+                message: text,
+                history,
+              }),
+
+              signal:
+                controller.signal,
+            }
+          );
+
+        const response =
+          await Promise.race([
+            request,
+            timeout,
+          ]);
+
+        if (!response.ok) {
+          throw new Error(
+            `Chat API failed with status ${response.status}`
           );
         }
 
-        return [
-          ...previous,
-          {
-            id: botMessageId,
-            sender: "bot",
-            text: replyText,
-          },
-        ];
-      });
-    };
+        const contentType =
+          response.headers.get(
+            "content-type"
+          ) || "";
 
-    const handleServerEvent = (eventBlock) => {
-      let eventName = "message";
-      const dataLines = [];
+        /* JSON response */
 
-      for (const line of eventBlock.split(/\r?\n/)) {
-        if (line.startsWith("event:")) {
-          eventName = line.slice(6).trim();
-        } else if (line.startsWith("data:")) {
-          dataLines.push(line.slice(5).trim());
-        }
-      }
+        if (
+          contentType.includes(
+            "application/json"
+          )
+        ) {
+          const data =
+            await response.json();
 
-      if (!dataLines.length) return false;
-
-      const data = JSON.parse(dataLines.join("\n"));
-
-      if (eventName === "token" && typeof data.text === "string") {
-        updateStreamedReply(data.text);
-      } else if (eventName === "error") {
-        throw new Error(
-          typeof data.message === "string"
-            ? data.message
-            : "The chat service could not finish the reply."
-        );
-      }
-
-      return eventName === "done";
-    };
-
-    try {
-      const timeout = new Promise((_, reject) => {
-        timeoutId = window.setTimeout(() => {
-          timedOut = true;
-          controller.abort();
-          reject(new Error("Chat request timed out"));
-        }, CHAT_TIMEOUT_MS);
-      });
-
-      const request = fetch(CHAT_API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ message: text, history }),
-        signal: controller.signal,
-      });
-
-      const response = await Promise.race([request, timeout]);
-
-      if (!response.ok) {
-        throw new Error(`Chat API failed with status ${response.status}`);
-      }
-
-      const contentType = response.headers.get("content-type") || "";
-
-      if (contentType.includes("application/json")) {
-        const data = await response.json();
-        if (typeof data.reply !== "string" || !data.reply.trim()) {
-          throw new Error("Invalid response from chat API");
-        }
-        updateStreamedReply(data.reply);
-      } else if (contentType.includes("text/event-stream") && response.body) {
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = "";
-        let streamFinished = false;
-
-        while (!streamFinished) {
-          const readResult = await Promise.race([reader.read(), timeout]);
-          buffer += decoder.decode(readResult.value || new Uint8Array(), {
-            stream: !readResult.done,
-          });
-
-          let boundary = buffer.search(/\r?\n\r?\n/);
-
-          while (boundary !== -1) {
-            const eventBlock = buffer.slice(0, boundary);
-            const delimiter = buffer.match(/\r?\n\r?\n/)[0];
-            buffer = buffer.slice(boundary + delimiter.length);
-            streamFinished = handleServerEvent(eventBlock);
-
-            if (streamFinished) break;
-            boundary = buffer.search(/\r?\n\r?\n/);
+          if (
+            typeof data.reply !==
+              "string" ||
+            !data.reply.trim()
+          ) {
+            throw new Error(
+              "Invalid response from chat API"
+            );
           }
 
-          if (readResult.done) {
-            if (buffer.trim()) {
-              streamFinished = handleServerEvent(buffer);
+          updateStreamedReply(
+            data.reply
+          );
+        }
+
+        /* Streaming response */
+
+        else if (
+          contentType.includes(
+            "text/event-stream"
+          ) &&
+          response.body
+        ) {
+          const reader =
+            response.body.getReader();
+
+          const decoder =
+            new TextDecoder();
+
+          let buffer = "";
+
+          let streamFinished =
+            false;
+
+          while (
+            !streamFinished
+          ) {
+            const readResult =
+              await Promise.race([
+                reader.read(),
+                timeout,
+              ]);
+
+            buffer +=
+              decoder.decode(
+                readResult.value ||
+                  new Uint8Array(),
+                {
+                  stream:
+                    !readResult.done,
+                }
+              );
+
+            let boundary =
+              buffer.search(
+                /\r?\n\r?\n/
+              );
+
+            while (
+              boundary !== -1
+            ) {
+              const eventBlock =
+                buffer.slice(
+                  0,
+                  boundary
+                );
+
+              const delimiter =
+                buffer.match(
+                  /\r?\n\r?\n/
+                )[0];
+
+              buffer =
+                buffer.slice(
+                  boundary +
+                    delimiter.length
+                );
+
+              streamFinished =
+                handleServerEvent(
+                  eventBlock
+                );
+
+              if (
+                streamFinished
+              ) {
+                break;
+              }
+
+              boundary =
+                buffer.search(
+                  /\r?\n\r?\n/
+                );
             }
-            break;
+
+            if (
+              readResult.done
+            ) {
+              if (
+                buffer.trim()
+              ) {
+                streamFinished =
+                  handleServerEvent(
+                    buffer
+                  );
+              }
+
+              break;
+            }
+          }
+
+          if (!replyText.trim()) {
+            throw new Error(
+              "Chat API returned an empty response"
+            );
+          }
+        } else {
+          throw new Error(
+            "Invalid response format from chat API"
+          );
+        }
+      } catch (error) {
+        if (
+          error.name !==
+            "AbortError" ||
+          timedOut
+        ) {
+          console.error(
+            "Chat error:",
+            error
+          );
+
+          if (
+            isMountedRef.current
+          ) {
+            setMessages(
+              (previous) => [
+                ...previous,
+                {
+                  id: createChatId(),
+                  sender: "bot",
+                  text: timedOut
+                    ? timeoutMessage
+                    : error.message ||
+                      connectionErrorMessage,
+                },
+              ]
+            );
           }
         }
+      } finally {
+        window.clearTimeout(
+          timeoutId
+        );
 
-        if (!replyText.trim()) {
-          throw new Error("Chat API returned an empty response");
-        }
-      } else {
-        throw new Error("Invalid response format from chat API");
-      }
-    } catch (error) {
-      if (error.name !== "AbortError" || timedOut) {
-        console.error("Chat error:", error);
-        if (isMountedRef.current) {
-          setMessages((previous) => [
-            ...previous,
-            {
-              id: createChatId(),
-              sender: "bot",
-              text: timedOut
-                ? timeoutMessage
-                : error.message || connectionErrorMessage,
-            },
-          ]);
-        }
-      }
-    } finally {
-      window.clearTimeout(timeoutId);
-      chatAbortControllerRef.current = null;
-      chatInFlightRef.current = false;
+        chatAbortControllerRef.current =
+          null;
 
-    }
-  };
+        chatInFlightRef.current =
+          false;
+      }
+    };
 
   /* =====================================================
      GAME STATUS
@@ -405,8 +1023,8 @@ export default function PlayWithMe() {
   const getGameStatus = () => {
     if (game.isCheckmate()) {
       return game.turn() === "w"
-        ? "Checkmate — Black wins"
-        : "Checkmate — You win!";
+        ? "Black wins"
+        : "Mansi wins";
     }
 
     if (game.isDraw()) {
@@ -414,37 +1032,46 @@ export default function PlayWithMe() {
     }
 
     if (isComputerThinking) {
-      return "AI is thinking...";
+      return "Mansi is thinking...";
     }
 
     if (game.inCheck()) {
       return game.turn() === "w"
-        ? "You're in check!"
+        ? "Mansi is in check!"
         : "Black is in check!";
     }
 
     return game.turn() === "w"
-      ? "Your turn"
+      ? "White's turn"
       : "Black's turn";
   };
 
-
   /* =====================================================
-     MOVE HISTORY
+     MOVE PAIRS
   ===================================================== */
-
-  const history = game.history();
 
   const movePairs = [];
 
-  for (let i = 0; i < history.length; i += 2) {
+  for (
+    let i = 0;
+    i < moveHistory.length;
+    i += 2
+  ) {
     movePairs.push({
-      number: Math.floor(i / 2) + 1,
-      white: history[i] || "",
-      black: history[i + 1] || ""
+      number:
+        Math.floor(i / 2) + 1,
+
+      white:
+        moveHistory[i]?.color === "w"
+          ? moveHistory[i].san
+          : "",
+
+      black:
+        moveHistory[i + 1]?.color === "b"
+          ? moveHistory[i + 1].san
+          : "",
     });
   }
-
 
   /* =====================================================
      RETURN
@@ -453,46 +1080,42 @@ export default function PlayWithMe() {
   return (
     <main className="play-page">
 
-      {/* ================================
-          TOP BAR
-      ================================= */}
+      {/* TOP BAR */}
 
       <header className="play-topbar">
-
-        <a
-          href="/"
+        <Link
+          to="/"
           className="back-home"
         >
           ← Back to Home
-        </a>
+        </Link>
 
         <span className="play-label">
           PLAY WITH ME
         </span>
-
       </header>
 
-
-      {/* ================================
-          MAIN GAME
-      ================================= */}
+      {/* MAIN GAME */}
 
       <section className="play-game-layout">
 
-        {/* =================================
-            CHAT
-        ================================= */}
+        {/* CHAT */}
 
         <section className="chat-card">
 
           <div className="chat-header">
 
             <div className="chat-avatar">
-              ✦
+              <img
+                src={manseeProfile}
+                alt="Mansee"
+              />
             </div>
 
-            <div>
-              <h2>Talk with me</h2>
+            <div className="chat-header-info">
+              <h2>
+                Talk with me
+              </h2>
 
               <span>
                 Ask me anything
@@ -500,7 +1123,6 @@ export default function PlayWithMe() {
             </div>
 
           </div>
-
 
           <div className="chat-messages">
 
@@ -519,13 +1141,12 @@ export default function PlayWithMe() {
 
           </div>
 
-
           <form
             className="chat-input"
             onSubmit={handleChatSubmit}
           >
-
             <input
+              type="text"
               value={message}
               onChange={(event) =>
                 setMessage(event.target.value)
@@ -536,83 +1157,105 @@ export default function PlayWithMe() {
             <button type="submit">
               ➤
             </button>
-
           </form>
 
         </section>
 
+        {/* SHARED CENTER GAME CARD */}
 
-        {/* =================================
-            CHESS
-        ================================= */}
-
-        <section className="chess-card">
-
-          {/* PLAYER HEADER */}
+        <section className="chess-card center-game-card">
 
           <div className="chess-player">
 
             <div className="player-avatar">
-              M
+              <img
+                src={mansiProfile}
+                alt="Mansi"
+              />
             </div>
 
             <div className="player-info">
-
               <strong>
                 Mansi
               </strong>
 
               <span>
-                Web Developer
+                Software Engineer
               </span>
-
             </div>
 
           </div>
 
-
-          {/* BOARD */}
-
-          <div className="chess-board">
+          <div className={`game-content game-content-${selectedGame}`} key={selectedGame}>
+          {selectedGame === "chess" ? <div className="chess-board">
 
             <Chessboard
-              position={game.fen()}
-              onPieceDrop={
-                handlePieceDrop
-              }
-              boardOrientation={
-                boardOrientation
-              }
-              arePiecesDraggable={
-                game.turn() === "w" &&
-                !game.isGameOver() &&
-                !isComputerThinking
-              }
-              customDarkSquareStyle={{
-                backgroundColor:
-                  "#765f50"
+              options={{
+                position: game.fen(),
+
+                boardOrientation:
+                  boardOrientation,
+
+                allowDragging:
+                  game.turn() ===
+                    playerColor &&
+                  !game.isGameOver() &&
+                  !isComputerThinking,
+
+                onPieceDrop:
+                  handlePieceDrop,
+
+                animationDurationInMs:
+                  250,
+
+                showAnimations:
+                  true,
+
+                darkSquareStyle: {
+                  backgroundColor:
+                    "#765f50",
+                },
+
+                lightSquareStyle: {
+                  backgroundColor:
+                    "#e4d1b5",
+                },
+
+                boardStyle: {
+                  borderRadius:
+                    "5px",
+
+                  overflow:
+                    "hidden",
+                },
               }}
-              customLightSquareStyle={{
-                backgroundColor:
-                  "#e4d1b5"
-              }}
-              customBoardStyle={{
-                borderRadius: "5px",
-                overflow: "hidden"
-              }}
-              animationDuration={250}
             />
 
+          </div> : (
+            <TicTacToe
+              board={ticTacToeBoard}
+              thinking={ticTacToeThinking}
+              result={ticTacToeResult}
+              winningCells={ticTacToeWinningCells}
+              score={ticTacToeScore}
+              onCellClick={handleTicTacToeCellClick}
+              onNewGame={handleTicTacToeNewGame}
+            />
+          )}
           </div>
 
         </section>
 
-
-        {/* =================================
-            RIGHT SIDEBAR
-        ================================= */}
+        {/* RIGHT SIDEBAR */}
 
         <aside className="game-sidebar">
+
+          <GameSelector
+            selectedGame={selectedGame}
+            onGameChange={setSelectedGame}
+          />
+
+          {selectedGame === "chess" ? <>
 
           {/* STATUS */}
 
@@ -620,7 +1263,9 @@ export default function PlayWithMe() {
 
             <span
               className={`status-dot ${
-                isComputerThinking ? "thinking-dot" : ""
+                isComputerThinking
+                  ? "thinking-dot"
+                  : ""
               }`}
             />
 
@@ -630,7 +1275,6 @@ export default function PlayWithMe() {
 
           </div>
 
-
           {/* MOVES */}
 
           <div className="moves-card">
@@ -639,39 +1283,44 @@ export default function PlayWithMe() {
               MOVES
             </div>
 
-            <div className="moves-list">
+            <div className="moves-list" ref={movesListRef}>
 
               {movePairs.length === 0 ? (
+
                 <div className="empty-moves">
                   No moves yet
                 </div>
+
               ) : (
-                movePairs.map((move) => (
-                  <div
-                    className="move-row"
-                    key={move.number}
-                  >
 
-                    <span className="move-number">
-                      {move.number}.
-                    </span>
+                movePairs.map(
+                  (move) => (
+                    <div
+                      className="move-row"
+                      key={move.number}
+                    >
 
-                    <span>
-                      {move.white}
-                    </span>
+                      <span className="move-number">
+                        {move.number}.
+                      </span>
 
-                    <span>
-                      {move.black}
-                    </span>
+                      <span>
+                        {move.white}
+                      </span>
 
-                  </div>
-                ))
+                      <span>
+                        {move.black}
+                      </span>
+
+                    </div>
+                  )
+                )
+
               )}
 
             </div>
 
           </div>
-
 
           {/* NEW GAME */}
 
@@ -683,8 +1332,7 @@ export default function PlayWithMe() {
             New Game
           </button>
 
-
-          {/* FLIP */}
+          {/* FLIP BOARD */}
 
           <button
             type="button"
@@ -693,6 +1341,21 @@ export default function PlayWithMe() {
           >
             Flip Board
           </button>
+
+          </> : (
+            <div className="tic-tac-toe-sidebar-summary">
+              <div className="sidebar-section-title">TIC-TAC-TOE</div>
+              <div className="tic-tac-toe-sidebar-status" aria-live="polite">
+                {ticTacToeThinking ? "Mansi is thinking..." : ticTacToeResult ? "Game complete" : "Your turn"}
+              </div>
+              <div className="sidebar-score">
+                <span>You <strong>{ticTacToeScore.player}</strong></span>
+                <span>Mansi <strong>{ticTacToeScore.computer}</strong></span>
+                <span>Ties <strong>{ticTacToeScore.ties}</strong></span>
+              </div>
+              <button type="button" className="game-button primary" onClick={handleTicTacToeNewGame}>New Game</button>
+            </div>
+          )}
 
         </aside>
 

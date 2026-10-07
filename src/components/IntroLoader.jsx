@@ -8,10 +8,6 @@ const greetings = [
   "નમસ્તે",        // Gujarati
   "ਸਤ ਸ੍ਰੀ ਅਕਾਲ", // Punjabi
   "வணக்கம்",       // Tamil
-  "నమస్కారం",      // Telugu
-  "ನಮಸ್ಕಾರ",       // Kannada
-  "നമസ്കാരം",       // Malayalam
-  "ଓଡ଼ିଆ ନମସ୍କାର", // Odia
   "Hello"      // English
 ];
 

@@ -5,7 +5,6 @@
 .footer {
   width: 100%;
   background: transparent;
-
   color: #765f50;
 
   padding: 70px 5% 25px;
@@ -64,6 +63,10 @@
 }
 
 
+/* =========================================
+   CONTACT LINKS
+========================================= */
+
 .footer-item a {
   color: #765f50;
 
@@ -71,14 +74,49 @@
 
   text-decoration: none;
 
-  transition: color 0.3s ease;
+  cursor: pointer;
+
+  transition:
+    color 0.3s ease,
+    opacity 0.3s ease;
 }
 
 
+/* Contact link hover - BROWN */
 .footer-item a:hover {
-  color: #9b7cf6;
+  color: #765f50;
+
+  text-decoration: underline;
 }
 
+
+/* =========================================
+   EMAIL LINK
+========================================= */
+
+.email-link {
+  color: #765f50 !important;
+
+  text-decoration: none !important;
+
+  cursor: pointer;
+
+  transition:
+    color 0.3s ease,
+    opacity 0.3s ease;
+}
+
+
+.email-link:hover {
+  color: #765f50 !important;
+
+  text-decoration: underline !important;
+}
+
+
+/* =========================================
+   CONTACT PARAGRAPH
+========================================= */
 
 .footer-item p {
   margin: 0;
@@ -97,6 +135,7 @@
 
 .footer-social {
   width: 100%;
+
   max-width: 300px;
 
   display: flex;
@@ -109,6 +148,10 @@
   margin-bottom: 4px;
 }
 
+
+/* =========================================
+   SOCIAL LINKS
+========================================= */
 
 .footer-social a {
   width: 100%;
@@ -131,6 +174,8 @@
 
   border-bottom: 1px solid rgba(118, 95, 80, 0.25);
 
+  cursor: pointer;
+
   transition:
     color 0.3s ease,
     padding-left 0.3s ease,
@@ -138,7 +183,9 @@
 }
 
 
-/* Icons */
+/* =========================================
+   SOCIAL ICONS
+========================================= */
 
 .footer-social a svg {
   width: 18px;
@@ -153,7 +200,9 @@
 }
 
 
-/* Arrow */
+/* =========================================
+   SOCIAL ARROW
+========================================= */
 
 .footer-social a b {
   font-size: 17px;
@@ -162,31 +211,40 @@
 
   text-align: right;
 
+  color: #765f50;
+
   opacity: 0.6;
 
-  transition: transform 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease,
+    color 0.3s ease;
 }
 
 
-/* Hover */
+/* =========================================
+   SOCIAL HOVER - BROWN
+========================================= */
 
 .footer-social a:hover {
-  color: #9b7cf6;
+  color: #765f50;
 
-  border-color: #9b7cf6;
+  border-color: #765f50;
 
   padding-left: 7px;
 }
 
 
 .footer-social a:hover svg {
-  color: #9b7cf6;
+  color: #765f50;
 
   transform: scale(1.15);
 }
 
 
 .footer-social a:hover b {
+  color: #765f50;
+
   transform: translate(4px, -4px);
 
   opacity: 1;
@@ -199,6 +257,7 @@
 
 .footer-bottom {
   width: 100%;
+
   max-width: 1250px;
 
   margin: 70px auto 0;
@@ -214,6 +273,10 @@
   justify-content: space-between;
 }
 
+
+/* =========================================
+   COPYRIGHT
+========================================= */
 
 .footer-bottom p {
   margin: 0;
@@ -235,7 +298,7 @@
 
   gap: 8px;
 
-  color: #806b5b;
+  color: #765f50;
 
   font-size: 12px;
 
@@ -244,6 +307,8 @@
   letter-spacing: 2px;
 
   text-decoration: none;
+
+  cursor: pointer;
 
   transition: color 0.3s ease;
 }
@@ -256,8 +321,9 @@
 }
 
 
+/* Back to top hover - BROWN */
 .back-top:hover {
-  color: #9b7cf6;
+  color: #765f50;
 }
 
 

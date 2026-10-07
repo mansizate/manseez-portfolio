@@ -12,14 +12,16 @@ export default function Contact() {
           <span className="cta-arrow">→</span>
         </Link>
 
-        {/* HIRE ME */}
-        <a
-          href="mailto:mansizate@gmail.com"
-          className="cta-box cta-hire"
-        >
-          <span>Hire Me</span>
-          <span className="cta-arrow">→</span>
-        </a>
+      {/* HIRE ME */}
+<a
+  href="https://www.linkedin.com/in/mansee-zate/"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="cta-box cta-hire"
+>
+  <span>Hire Me</span>
+  <span className="cta-arrow">→</span>
+</a>
 
       </div>
     </section>

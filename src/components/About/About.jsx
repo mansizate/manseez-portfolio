@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import "./About.css";
 import {
   GraduationCap,
@@ -7,6 +8,26 @@ import {
 } from "lucide-react";
 
 export default function About() {
+  const videoRef = useRef(null);
+  const [loadVideo, setLoadVideo] = useState(
+    () => typeof IntersectionObserver === "undefined",
+  );
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || loadVideo) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setLoadVideo(true);
+        observer.disconnect();
+      }
+    }, { rootMargin: "300px 0px" });
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [loadVideo]);
+
   return (
     <section className="about editorial-section" id="about">
       <div className="editorial-card">
@@ -67,15 +88,24 @@ export default function About() {
           {/* About Video */}
           <div className="about-video-column">
             <video
+              ref={videoRef}
               className="about-video"
-              src="public/videos/InShot_20260613_200502811 (1).mp4"
+              poster="/videos/about-profile-poster-v1.jpg"
+              preload="metadata"
               autoPlay
               muted
               loop
               playsInline
               controls={false}
               aria-label="About Mansi Zate"
-            />
+            >
+              {loadVideo && (
+                <source
+                  src="/videos/about-profile-720p-v1.mp4"
+                  type="video/mp4"
+                />
+              )}
+            </video>
           </div>
 
         </div>

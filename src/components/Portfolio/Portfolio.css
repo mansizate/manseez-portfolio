@@ -1,1 +1,1656 @@
-/* Portfolio styles remain in the global stylesheet to preserve the existing cascade. */
+/* =========================================================
+   PORTFOLIO
+   ========================================================= */
+
+.portfolio {
+  width: 100%;
+  min-height: 100vh;
+
+  padding: 24px 16px;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  background: #d8c5a7;
+}
+
+.portfolio *,
+.portfolio *::before,
+.portfolio *::after {
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   MAIN CARD
+   ========================================================= */
+
+.editorial-card {
+  position: relative;
+
+  width: min(100%, 1188px);
+
+  min-height: 695px;
+
+  margin: 0 auto;
+
+  padding: 96px 81px 73px;
+
+  background: #342018;
+
+  color: #342018;
+
+  border-radius: 36px;
+
+  box-shadow:
+    0 15px 40px
+    rgba(50, 30, 15, 0.18);
+}
+
+.portfolio .editorial-card {
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   PAPERCLIP
+   ========================================================= */
+
+.paperclip {
+  position: absolute;
+
+  top: -18px;
+
+  left: 50%;
+
+  width: 20px;
+
+  height: 124px;
+
+  transform:
+    translateX(-50%)
+    rotate(8deg);
+
+  border:
+    3px solid
+    #d5a653;
+
+  border-radius: 13px;
+
+  z-index: 20;
+
+  pointer-events: none;
+}
+
+.paperclip::before {
+  content: "";
+
+  position: absolute;
+
+  top: 14px;
+
+  left: 4px;
+
+  width: 8px;
+
+  height: 92px;
+
+  border:
+    2px solid
+    #d5a653;
+
+  border-radius: 9px;
+}
+
+
+/* =========================================================
+   INNER CARD
+   ========================================================= */
+
+.editorial-inner {
+  width: 100%;
+
+  min-height: 525px;
+
+  padding:
+    42px
+    62px
+    40px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  background: #342018;
+
+  border:
+    1px solid
+    rgba(
+      214,
+      168,
+      89,
+      0.40
+    );
+
+  border-radius: 29px;
+}
+
+
+/* =========================================================
+   LABEL
+   ========================================================= */
+
+.portfolio-label {
+  margin:
+    0
+    0
+    24px;
+
+  color:
+    #c9c0b8;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 16px;
+
+  font-weight: 700;
+
+  letter-spacing: 2px;
+
+  line-height: 1.2;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   TITLE
+   ========================================================= */
+
+.work-title {
+  margin:
+    0
+    0
+    34px;
+
+  color:
+    #fffaf4;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  /*
+    Increased from the old 42-60px range
+    to match the screenshot.
+  */
+  font-size:
+    clamp(
+      62px,
+      6.2vw,
+      92px
+    );
+
+  font-weight: 700;
+
+  line-height: 0.90;
+
+  letter-spacing: -4px;
+}
+
+
+/* =========================================================
+   INTRO
+   ========================================================= */
+
+.work-intro {
+  margin:
+    0
+    0
+    0;
+
+  color:
+    #f3ebe2;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 20px;
+
+  font-weight: 400;
+
+  line-height: 1.45;
+}
+
+
+/* =========================================================
+   BUTTON
+   ========================================================= */
+
+.portfolio-toggle {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  width: fit-content;
+
+  min-height: 64px;
+
+  margin-top: 0;
+
+  padding:
+    0
+    37px;
+
+  border:
+    1px solid
+    #dfa84f;
+
+  border-radius: 34px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #d09a45 0%,
+      #aa702b 100%
+    );
+
+  color:
+    #fffaf0;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 16px;
+
+  font-weight: 800;
+
+  letter-spacing: 1px;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    transform
+    0.2s ease,
+
+    box-shadow
+    0.2s ease,
+
+    background
+    0.2s ease;
+}
+
+.portfolio-toggle:hover {
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 7px 18px
+    rgba(
+      0,
+      0,
+      0,
+      0.2
+    );
+
+  background:
+    linear-gradient(
+      180deg,
+      #dca44c 0%,
+      #b77a2e 100%
+    );
+}
+
+.portfolio-toggle:active {
+  transform:
+    translateY(0);
+}
+
+.button-arrow {
+  margin-left: 6px;
+
+  font-size: 18px;
+
+  line-height: 1;
+}
+
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+
+.project-modal {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 9999;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 18px;
+
+  background:
+    rgba(
+      15,
+      9,
+      6,
+      0.78
+    );
+
+  backdrop-filter:
+    blur(7px);
+
+  -webkit-backdrop-filter:
+    blur(7px);
+
+  animation:
+    modalFadeIn
+    0.2s
+    ease;
+}
+
+
+/* =========================================================
+   POPUP
+   ========================================================= */
+
+.project-popup {
+  position: relative;
+
+  width:
+    min(
+      92vw,
+      1050px
+    );
+
+  min-height: 560px;
+
+  max-height: 88vh;
+
+  overflow-y: auto;
+
+  overflow-x: hidden;
+
+  padding:
+    28px
+    40px
+    34px;
+
+  background:
+    transparent;
+
+  color:
+    #fffaf4;
+
+  border:
+    1px solid
+    rgba(
+      194,
+      139,
+      58,
+      0.9
+    );
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 30px 80px
+    rgba(
+      0,
+      0,
+      0,
+      0.55
+    );
+
+  isolation: isolate;
+
+  scrollbar-width: thin;
+
+  scrollbar-color:
+    #b47c32
+    #24150f;
+
+  animation:
+    popupOpen
+    0.3s
+    ease;
+}
+
+
+/* =========================================================
+   ANIMATED BACKGROUND IMAGE
+   ========================================================= */
+
+.project-background-image {
+  position: absolute;
+
+  inset: 0;
+
+  z-index: -3;
+
+  width: 100%;
+
+  height: 100%;
+
+  background-size: cover;
+
+  background-position:
+    center center;
+
+  background-repeat: no-repeat;
+
+  border-radius: 24px;
+
+  opacity: 0;
+
+  transform:
+    scale(1.04);
+
+  transition:
+    opacity
+    1.5s
+    ease-in-out,
+
+    transform
+    5s
+    ease;
+}
+
+
+/* =========================================================
+   ACTIVE IMAGE
+   ========================================================= */
+
+.project-background-image.active {
+  opacity: 1;
+
+  transform:
+    scale(1);
+}
+
+
+/* =========================================================
+   IMAGE TWO
+   ========================================================= */
+
+.project-background-image.image-two {
+  z-index: -2;
+}
+
+
+/* =========================================================
+   DARK OVERLAY
+   ========================================================= */
+
+.project-background-overlay {
+  position: absolute;
+
+  inset: 0;
+
+  z-index: -1;
+
+  border-radius: 24px;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      90deg,
+
+      rgba(
+        40,
+        22,
+        14,
+        0.83
+      )
+      0%,
+
+      rgba(
+        52,
+        31,
+        22,
+        0.66
+      )
+      45%,
+
+      rgba(
+        52,
+        31,
+        22,
+        0.42
+      )
+      100%
+    );
+}
+
+
+/* =========================================================
+   SECOND OVERLAY
+   ========================================================= */
+
+.project-background-overlay::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  border-radius: 24px;
+
+  background:
+    linear-gradient(
+      180deg,
+
+      rgba(
+        30,
+        17,
+        11,
+        0.18
+      ),
+
+      rgba(
+        30,
+        17,
+        11,
+        0.52
+      )
+    );
+}
+
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.project-popup-content {
+  position: relative;
+
+  z-index: 5;
+
+  width: 100%;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.record-header {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    auto
+    1fr;
+
+  align-items: center;
+
+  gap: 12px;
+
+  width: 100%;
+}
+
+
+/* =========================================================
+   BACK BUTTON
+   ========================================================= */
+
+.back-button {
+  justify-self: start;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding:
+    9px
+    17px;
+
+  background:
+    rgba(
+      35,
+      19,
+      12,
+      0.58
+    );
+
+  border:
+    1px solid
+    #bd8a3e;
+
+  border-radius: 25px;
+
+  color:
+    #f5e8d6;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.7px;
+
+  cursor: pointer;
+
+  backdrop-filter:
+    blur(6px);
+
+  transition:
+    0.2s ease;
+}
+
+.back-button span {
+  font-size: 16px;
+}
+
+.back-button:hover {
+  background:
+    #b47c32;
+
+  color:
+    white;
+
+  transform:
+    translateX(-2px);
+}
+
+
+/* =========================================================
+   COUNTER
+   ========================================================= */
+
+.record-counter {
+  color:
+    #e5c88e;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: 2px;
+
+  text-shadow:
+    0 2px 8px
+    rgba(
+      0,
+      0,
+      0,
+      0.7
+    );
+}
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+.record-navigation {
+  justify-self: end;
+
+  display: flex;
+
+  gap: 8px;
+}
+
+.record-navigation button {
+  width: 44px;
+
+  height: 44px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border:
+    1px solid
+    #a97732;
+
+  border-radius: 50%;
+
+  background:
+    rgba(
+      35,
+      19,
+      12,
+      0.58
+    );
+
+  color:
+    #f0d39a;
+
+  font-size: 17px;
+
+  cursor: pointer;
+
+  backdrop-filter:
+    blur(6px);
+
+  transition:
+    0.25s ease;
+}
+
+.record-navigation button:hover {
+  background:
+    #b47c32;
+
+  color:
+    white;
+
+  transform:
+    translateY(-2px);
+}
+
+
+/* =========================================================
+   DIVIDER
+   ========================================================= */
+
+.record-divider {
+  width: 100%;
+
+  height: 1px;
+
+  margin:
+    16px
+    0
+    42px;
+
+  background:
+    rgba(
+      210,
+      160,
+      75,
+      0.45
+    );
+}
+
+
+/* =========================================================
+   CONTENT AREA
+   ========================================================= */
+
+.record-content {
+  width: 100%;
+
+  max-width: 900px;
+
+  margin: 0 auto;
+}
+
+
+/* =========================================================
+   TAG
+   ========================================================= */
+
+.record-tag {
+  display: inline-flex;
+
+  align-items: center;
+
+  padding:
+    8px
+    16px;
+
+  margin-bottom: 20px;
+
+  background:
+    rgba(
+      35,
+      19,
+      12,
+      0.55
+    );
+
+  border:
+    1px solid
+    #c28d42;
+
+  border-radius: 22px;
+
+  color:
+    #e6ca98;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 10px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.2px;
+
+  text-transform: uppercase;
+
+  backdrop-filter:
+    blur(6px);
+
+  text-shadow:
+    0 2px 6px
+    rgba(
+      0,
+      0,
+      0,
+      0.6
+    );
+}
+
+
+/* =========================================================
+   TITLE
+   ========================================================= */
+
+.record-title {
+  margin:
+    0
+    0
+    8px;
+
+  color:
+    #fffaf2;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      48px,
+      5vw,
+      68px
+    );
+
+  font-weight: 700;
+
+  line-height: 0.98;
+
+  letter-spacing: -2px;
+
+  text-shadow:
+    0 4px 15px
+    rgba(
+      0,
+      0,
+      0,
+      0.8
+    );
+}
+
+
+/* =========================================================
+   SUBTITLE
+   ========================================================= */
+
+.record-company {
+  margin:
+    0
+    0
+    18px;
+
+  color:
+    #e5ca93;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 15px;
+
+  font-weight: 700;
+
+  text-shadow:
+    0 2px 8px
+    rgba(
+      0,
+      0,
+      0,
+      0.8
+    );
+}
+
+
+/* =========================================================
+   LOCATION
+   ========================================================= */
+
+.record-meta {
+  display: flex;
+
+  align-items: center;
+
+  margin-bottom: 25px;
+
+  color:
+    #f2e4d3;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  text-shadow:
+    0 2px 7px
+    rgba(
+      0,
+      0,
+      0,
+      0.8
+    );
+}
+
+.record-meta span {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+}
+
+.meta-icon {
+  color:
+    #e0a44a;
+
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   POINTS
+   ========================================================= */
+
+.record-points {
+  margin:
+    0
+    0
+    20px;
+
+  padding-left: 26px;
+
+  color:
+    #fffaf4;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 14px;
+
+  line-height: 1.65;
+
+  text-shadow:
+    0 2px 8px
+    rgba(
+      0,
+      0,
+      0,
+      0.85
+    );
+}
+
+.record-points li {
+  margin-bottom: 7px;
+
+  padding-left: 2px;
+}
+
+
+/* =========================================================
+   TECHNOLOGIES
+   ========================================================= */
+
+.record-technologies {
+  margin-top: 15px;
+
+  color:
+    #f1dfc8;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 12px;
+
+  line-height: 1.5;
+
+  text-shadow:
+    0 2px 8px
+    rgba(
+      0,
+      0,
+      0,
+      0.85
+    );
+}
+
+.record-technologies strong {
+  color:
+    #fff7e8;
+}
+
+
+/* =========================================================
+   GITHUB
+   ========================================================= */
+
+.record-link {
+  margin-top: 22px;
+}
+
+.record-link a {
+  display: inline-block;
+
+  color:
+    #e3b65f;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  text-decoration: underline;
+
+  text-underline-offset: 4px;
+
+  text-shadow:
+    0 2px 8px
+    rgba(
+      0,
+      0,
+      0,
+      0.85
+    );
+
+  transition:
+    0.2s ease;
+}
+
+.record-link a:hover {
+  color:
+    #ffd88b;
+
+  transform:
+    translateY(-1px);
+}
+
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popupOpen {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(18px)
+      scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  .portfolio {
+    padding:
+      20px
+      14px;
+  }
+
+  .editorial-card {
+    min-height: 650px;
+
+    padding:
+      80px
+      45px
+      55px;
+
+    border-radius: 30px;
+  }
+
+  .editorial-inner {
+    min-height: 500px;
+
+    padding:
+      38px
+      40px;
+  }
+
+  .portfolio-label {
+    font-size: 14px;
+  }
+
+  .work-title {
+    font-size:
+      clamp(
+        56px,
+        8vw,
+        76px
+      );
+  }
+
+  .work-intro {
+    font-size: 18px;
+  }
+
+  .portfolio-toggle {
+    min-height: 58px;
+
+    padding:
+      0
+      30px;
+
+    font-size: 14px;
+  }
+
+  .project-popup {
+    width: 94vw;
+
+    min-height: 520px;
+
+    padding:
+      25px
+      30px
+      32px;
+  }
+
+  .record-title {
+    font-size: 52px;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .portfolio {
+    min-height: 100vh;
+
+    padding:
+      12px
+      8px;
+
+    background: #d8c5a7;
+  }
+
+
+  /* MAIN CARD */
+
+  .editorial-card {
+    width: 100%;
+
+    min-height:
+      calc(100vh - 24px);
+
+    padding:
+      70px
+      14px
+      30px;
+
+    border-radius: 22px;
+  }
+
+
+  /* PAPERCLIP */
+
+  .paperclip {
+    top: -13px;
+
+    width: 17px;
+
+    height: 88px;
+
+    border-width: 2px;
+  }
+
+  .paperclip::before {
+    top: 10px;
+
+    left: 4px;
+
+    width: 6px;
+
+    height: 65px;
+
+    border-width: 2px;
+  }
+
+
+  /* INNER */
+
+  .editorial-inner {
+    width: 100%;
+
+    min-height:
+      calc(100vh - 124px);
+
+    padding:
+      30px
+      20px
+      28px;
+
+    border-radius: 18px;
+
+    justify-content: center;
+  }
+
+
+  /* LABEL */
+
+  .portfolio-label {
+    margin-bottom: 18px;
+
+    font-size: 10px;
+
+    letter-spacing: 1.4px;
+  }
+
+
+  /* TITLE */
+
+  .work-title {
+    margin-bottom: 24px;
+
+    font-size:
+      clamp(
+        46px,
+        14vw,
+        65px
+      );
+
+    line-height: 0.92;
+
+    letter-spacing: -2.5px;
+  }
+
+
+  /* INTRO */
+
+  .work-intro {
+    margin-bottom: 20px;
+
+    font-size: 14px;
+
+    line-height: 1.45;
+  }
+
+
+  /* BUTTON */
+
+  .portfolio-toggle {
+    min-height: 52px;
+
+    padding:
+      0
+      22px;
+
+    font-size: 10px;
+
+    letter-spacing: 0.8px;
+  }
+
+  .button-arrow {
+    margin-left: 5px;
+
+    font-size: 14px;
+  }
+
+
+  /* =======================================================
+     MOBILE POPUP
+     ======================================================= */
+
+  .project-modal {
+    padding: 8px;
+  }
+
+  .project-popup {
+    width: 100%;
+
+    min-height: 0;
+
+    max-height: 92vh;
+
+    padding:
+      20px
+      16px
+      24px;
+
+    border-radius: 18px;
+  }
+
+  .project-background-image {
+    border-radius: 18px;
+
+    background-position:
+      center center;
+  }
+
+  .project-background-overlay {
+    border-radius: 18px;
+
+    background:
+      linear-gradient(
+        90deg,
+
+        rgba(
+          35,
+          20,
+          14,
+          0.91
+        ),
+
+        rgba(
+          35,
+          20,
+          14,
+          0.68
+        )
+      );
+  }
+
+
+  /* HEADER */
+
+  .record-header {
+    grid-template-columns:
+      auto
+      1fr
+      auto;
+
+    gap: 5px;
+  }
+
+
+  /* BACK */
+
+  .back-button {
+    padding:
+      7px
+      10px;
+
+    font-size: 8px;
+  }
+
+  .back-button span {
+    font-size: 14px;
+  }
+
+
+  /* COUNTER */
+
+  .record-counter {
+    text-align: center;
+
+    font-size: 8px;
+
+    letter-spacing: 1.2px;
+  }
+
+
+  /* NAV */
+
+  .record-navigation {
+    gap: 3px;
+  }
+
+  .record-navigation button {
+    width: 32px;
+
+    height: 32px;
+
+    font-size: 13px;
+  }
+
+
+  /* DIVIDER */
+
+  .record-divider {
+    margin:
+      10px
+      0
+      25px;
+  }
+
+
+  /* TAG */
+
+  .record-tag {
+    padding:
+      6px
+      11px;
+
+    margin-bottom: 15px;
+
+    font-size: 8px;
+  }
+
+
+  /* TITLE */
+
+  .record-title {
+    font-size:
+      clamp(
+        36px,
+        11vw,
+        48px
+      );
+
+    letter-spacing:
+      -1.5px;
+  }
+
+
+  /* COMPANY */
+
+  .record-company {
+    font-size: 12px;
+  }
+
+
+  /* META */
+
+  .record-meta {
+    font-size: 10px;
+
+    margin-bottom: 16px;
+  }
+
+
+  /* POINTS */
+
+  .record-points {
+    font-size: 11px;
+
+    line-height: 1.55;
+
+    padding-left: 19px;
+  }
+
+
+  /* TECHNOLOGIES */
+
+  .record-technologies {
+    font-size: 10px;
+  }
+
+
+  /* LINK */
+
+  .record-link a {
+    font-size: 10px;
+  }
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+  .portfolio {
+    padding:
+      10px
+      6px;
+  }
+
+  .editorial-card {
+    padding:
+      60px
+      10px
+      25px;
+  }
+
+  .editorial-inner {
+    padding:
+      26px
+      16px
+      24px;
+  }
+
+  .portfolio-label {
+    font-size: 9px;
+  }
+
+  .work-title {
+    font-size: 42px;
+
+    letter-spacing:
+      -2px;
+  }
+
+  .work-intro {
+    font-size: 13px;
+  }
+
+  .portfolio-toggle {
+    min-height: 48px;
+
+    padding:
+      0
+      18px;
+
+    font-size: 9px;
+  }
+
+  .project-popup {
+    padding:
+      17px
+      13px
+      21px;
+  }
+
+  .record-title {
+    font-size: 30px;
+  }
+
+  .record-points {
+    font-size: 10px;
+  }
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+button:focus-visible,
+a:focus-visible {
+  outline:
+    2px solid
+    #dfa84f;
+
+  outline-offset: 3px;
+}
+
+
+/* =========================================================
+   REDUCE MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration:
+      0.01ms !important;
+
+    animation-iteration-count:
+      1 !important;
+
+    transition-duration:
+      0.01ms !important;
+  }
+}

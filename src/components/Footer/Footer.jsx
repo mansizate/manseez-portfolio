@@ -22,11 +22,13 @@ export default function Footer() {
             <span className="footer-label">
               Email
             </span>
-
-            <a href="mailto:your-email@gmail.com">
-              mansizate@gmail.com
-            </a>
-          </div>
+<a
+  href="https://mail.google.com/mail/?view=cm&fs=1&to=mansizate@gmail.com"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  mansizate@gmail.com
+</a></div>
 
           <div className="footer-item location">
             <span className="footer-label">
@@ -34,7 +36,7 @@ export default function Footer() {
             </span>
 
             <p>
-              Chhatrapati Sambhajinagar,
+              Pune
               <br />
               Maharashtra, India
             </p>
@@ -43,55 +45,58 @@ export default function Footer() {
         </div>
 
 
-        {/* SOCIAL */}
-        <div className="footer-social">
+       {/* SOCIAL */}
+<div className="footer-social">
 
-          <span className="footer-label">
-            Social
-          </span>
+  <span className="footer-label">
+    Social
+  </span>
 
-          <a
-            href="https://github.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FaGithub />
-            <span>GitHub</span>
-            <b>↗</b>
-          </a>
+  {/* GitHub */}
+  <a
+    href="https://github.com/mansizate"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <FaGithub />
+    <span>GitHub</span>
+    <b>↗</b>
+  </a>
 
-          <a
-            href="https://linkedin.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FaLinkedinIn />
-            <span>LinkedIn</span>
-            <b>↗</b>
-          </a>
+  {/* LinkedIn */}
+  <a
+    href="https://www.linkedin.com/in/mansee-zate/"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <FaLinkedinIn />
+    <span>LinkedIn</span>
+    <b>↗</b>
+  </a>
 
-          <a
-            href="https://x.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FaXTwitter />
-            <span>X / Twitter</span>
-            <b>↗</b>
-          </a>
+  {/* X / Twitter */}
+  <a
+    href="https://x.com/manseeez"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <FaXTwitter />
+    <span>X / Twitter</span>
+    <b>↗</b>
+  </a>
 
-          <a
-            href="https://instagram.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FaInstagram />
-            <span>Instagram</span>
-            <b>↗</b>
-          </a>
+  {/* Instagram */}
+  <a
+    href="https://www.instagram.com/manseez_/"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <FaInstagram />
+    <span>Instagram</span>
+    <b>↗</b>
+  </a>
 
-        </div>
-
+</div>
       </div>
 
 
