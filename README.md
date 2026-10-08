@@ -1,4 +1,4 @@
-# Mansi Zate — Portfolio
+# Mansi Zate - Portfolio
 
 Hi, I'm Mansi Zate, a Computer Science Engineering graduate interested in software and web development.
 
