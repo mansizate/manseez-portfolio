@@ -59,12 +59,6 @@ The main features include:
 - Collection requests
 - Restaurant and biogas operator workflows
 
-### FreeBioData
-
-A web application for creating matrimonial biodata.
-
-I worked on responsive templates, page layouts, form handling, debugging, and improving the user experience.
-
 ### Recipe Recommendation System
 
 A web application that helps users find recipes based on ingredients and preferences.
