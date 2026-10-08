@@ -48,7 +48,7 @@ I'm currently focusing on improving my skills in Java, Spring Boot, React.js, RE
 
 ## Projects
 
-### GETinn — Restaurant & Food Waste Platform
+### GETinn -Tech that feeds and fules
 
 A web platform designed to connect restaurants with biogas operators and help manage food waste.
 
