@@ -19,9 +19,11 @@ const createChatId = () =>
     ? crypto.randomUUID()
     : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
-const CHAT_API_URL =
-  import.meta.env.VITE_CHAT_API_URL ||
-  "http://127.0.0.1:8000/api/chat/";
+const API_BASE_URL = (
+  import.meta.env.VITE_API_URL ||
+  "https://manseez-portfolio.onrender.com"
+).replace(/\/+$/, "");
+const CHAT_API_URL = `${API_BASE_URL}/api/chat/`;
 
 /* =====================================================
    CHESS AI

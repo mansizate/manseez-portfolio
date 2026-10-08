@@ -1,23 +1,16 @@
+
 import os
-import json
+import traceback
 from datetime import datetime, timezone
 
-from django.http import StreamingHttpResponse
-from dotenv import load_dotenv
+from django.http import JsonResponse
+from django.views.decorators.http import require_safe
 from google import genai
 from google.genai import types
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-
-# =========================================================
-# LOAD ENVIRONMENT VARIABLES
-# =========================================================
-
-load_dotenv()
-
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-# This is the fastest text model currently available to this API project.
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
 
 
@@ -436,116 +429,153 @@ ANSWERING RULES
 
 20. Always maintain a positive, professional and natural tone.
 """
-
-
-# =========================================================
-# CHAT API
-# =========================================================
-
 @api_view(["POST"])
 def chat_message(request):
+    print("========== CHAT API STARTED ==========", flush=True)
+    print("Message received", flush=True)
+    print("Gemini key exists:", bool(GEMINI_API_KEY), flush=True)
 
-    # Get the visitor message and a small amount of conversation context.
-    message = request.data.get("message", "").strip()
+    if not isinstance(request.data, dict):
+        print("History type: unavailable", flush=True)
+        return Response({"reply": "Request body must be a JSON object."}, status=400)
+
+    message = request.data.get("message")
     history = request.data.get("history", [])
+    print("History type:", type(history).__name__, flush=True)
 
-    # Empty message check
-    if not message:
-        return Response(
-            {
-                "reply": "Please type a message."
-            },
-            status=400
-        )
+    if not isinstance(message, str) or not message.strip():
+        return Response({"reply": "Please type a message."}, status=400)
+
+    message = message.strip()
+
+    if len(message) > 4000:
+        return Response({"reply": "Messages must be 4000 characters or fewer."}, status=400)
+
+    if not isinstance(history, list):
+        return Response({"reply": "History must be a list."}, status=400)
+
+    contents = []
+    for item in history[-10:]:
+        if not isinstance(item, dict):
+            return Response(
+                {"reply": "Each history item must be an object."},
+                status=400,
+            )
+
+        role = item.get("role")
+        content = item.get("content")
+        if (
+            role not in {"user", "model", "assistant"}
+            or not isinstance(content, str)
+        ):
+            return Response(
+                {
+                    "reply": (
+                        "Each history item needs a valid role and text content."
+                    )
+                },
+                status=400,
+            )
+
+        content = content.strip()
+        if content:
+            contents.append(
+                types.Content(
+                    role="model" if role == "assistant" else role,
+                    parts=[types.Part(text=content[:4000])],
+                )
+            )
 
     if not GEMINI_API_KEY:
+        print("ERROR: GEMINI_API_KEY is missing.", flush=True)
         return Response(
             {"reply": "The chat service has not been configured yet."},
             status=503,
         )
 
-    if not isinstance(history, list):
-        history = []
-
-    contents = []
-    for item in history[-10:]:
-        if not isinstance(item, dict):
-            continue
-        role = item.get("role")
-        content = item.get("content", "")
-        if role not in {"user", "model"} or not isinstance(content, str):
-            continue
-        content = content.strip()
-        if content:
-            contents.append(
-                types.Content(role=role, parts=[types.Part(text=content[:4000])])
-            )
-    contents.append(types.Content(role="user", parts=[types.Part(text=message)]))
-
-    def stream_reply():
-        client = genai.Client(api_key=GEMINI_API_KEY)
-
-        def generate_reply(use_live_search):
-            response_stream = None
-            try:
-                config = types.GenerateContentConfig(
-                    system_instruction=(
-                        f"{MANSI_CONTEXT}\n\n"
-                        f"Current UTC time: {datetime.now(timezone.utc).isoformat()}.\n"
-                        "Use Google Search for questions where up-to-date or real-time "
-                        "information matters, including news, dates, weather, prices, "
-                        "sports, people, or current events. Clearly say when you are "
-                        "not certain. For questions about Mansi, use only the portfolio "
-                        "context above. Keep answers useful and concise."
-                    ),
-                    thinking_config=types.ThinkingConfig(thinking_budget=0),
-                    max_output_tokens=500,
-                    temperature=0.4,
-                )
-                if use_live_search:
-                    config.tools = [types.Tool(google_search=types.GoogleSearch())]
-
-                response_stream = client.models.generate_content_stream(
-                    model=GEMINI_MODEL,
-                    contents=contents,
-                    config=config,
-                )
-
-                for chunk in response_stream:
-                    if chunk.text:
-                        yield (
-                            "event: token\n"
-                            f"data: {json.dumps({'text': chunk.text})}\n\n"
-                        )
-            finally:
-                if response_stream is not None:
-                    response_stream.close()
-
-        try:
-            try:
-              yield from generate_reply(use_live_search=False)
-            except Exception as search_error:
-                # Search grounding has separate quota requirements. A normal
-                # AI response is still useful when that quota is unavailable.
-                if getattr(search_error, "code", None) != 429:
-                    raise
-                yield from generate_reply(use_live_search=False)
-            yield "event: done\ndata: {}\n\n"
-        except Exception as error:
-            print("Gemini Error:", repr(error))
-            if getattr(error, "code", None) == 429:
-                error_message = "The Gemini API quota has been reached. Please check billing or try again later."
-            else:
-                error_message = "The AI service is temporarily unavailable."
-            yield (
-                "event: error\n"
-                f"data: {json.dumps({'message': error_message})}\n\n"
-            )
-
-    response = StreamingHttpResponse(
-        stream_reply(),
-        content_type="text/event-stream",
+    contents.append(
+        types.Content(
+            role="user",
+            parts=[types.Part(text=message)],
+        )
     )
-    response["Cache-Control"] = "no-cache"
-    response["X-Accel-Buffering"] = "no"
-    return response
+
+    print("Creating Gemini client", flush=True)
+    client = None
+    try:
+        client = genai.Client(
+            api_key=GEMINI_API_KEY,
+            http_options=types.HttpOptions(
+                timeout=25000,
+                retry_options=types.HttpRetryOptions(attempts=1),
+            ),
+        )
+
+        config = types.GenerateContentConfig(
+            system_instruction=(
+                f"{MANSI_CONTEXT}\n\n"
+                f"Current UTC time: {datetime.now(timezone.utc).isoformat()}.\n\n"
+                "For questions about Mansi, use only the portfolio context "
+                "provided above. Answer clearly, naturally, helpfully, and "
+                "concisely. If the information is not available in the "
+                "portfolio context, clearly say that you do not have that "
+                "information."
+            ),
+            max_output_tokens=500,
+        )
+
+        print("Calling Gemini model:", GEMINI_MODEL, flush=True)
+        gemini_response = client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents=contents,
+            config=config,
+        )
+        print("Gemini response received", flush=True)
+
+        reply = gemini_response.text
+        if not isinstance(reply, str) or not reply.strip():
+            print("Gemini returned an empty response", flush=True)
+            return Response(
+                {"reply": "Sorry, I could not generate a response right now."},
+                status=502,
+            )
+
+        print("Response length:", len(reply), flush=True)
+        return Response({"reply": reply.strip()})
+    except Exception as error:
+        error_message = str(error)
+        formatted_traceback = traceback.format_exc()
+        if GEMINI_API_KEY:
+            error_message = error_message.replace(GEMINI_API_KEY, "[REDACTED]")
+            formatted_traceback = formatted_traceback.replace(
+                GEMINI_API_KEY,
+                "[REDACTED]",
+            )
+
+        print("Gemini error type:", type(error).__name__, flush=True)
+        print("Gemini error message:", error_message, flush=True)
+        print("Gemini traceback:\n" + formatted_traceback, flush=True)
+
+        if getattr(error, "code", None) == 429:
+            return Response(
+                {
+                    "reply": (
+                        "The Gemini API quota has been reached. "
+                        "Please try again later."
+                    )
+                },
+                status=503,
+            )
+
+        return Response(
+            {"reply": "The AI service is temporarily unavailable."},
+            status=502,
+        )
+    finally:
+        if client is not None:
+            client.close()
+
+
+@require_safe
+def health_check(request):
+    return JsonResponse({"status": "ok"})
