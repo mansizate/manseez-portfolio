@@ -1,17 +1,22 @@
 
+import logging
 import os
+import time
 import traceback
 from datetime import datetime, timezone
 
+import httpx
 from django.http import JsonResponse
 from django.views.decorators.http import require_safe
 from google import genai
 from google.genai import types
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.views import exception_handler as drf_exception_handler
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
+logger = logging.getLogger(__name__)
 
 
 # =========================================================
@@ -429,52 +434,109 @@ ANSWERING RULES
 
 20. Always maintain a positive, professional and natural tone.
 """
+
+
+def chat_api_exception_handler(exception, context):
+    response = drf_exception_handler(exception, context)
+    if response is None:
+        logger.error(
+            "Unhandled chat API exception (%s)",
+            type(exception).__name__,
+            exc_info=(
+                type(exception),
+                exception,
+                exception.__traceback__,
+            ),
+        )
+        return Response(
+            {
+                "success": False,
+                "error": "The chat service encountered an unexpected error. Please try again.",
+                "code": "internal_error",
+            },
+            status=500,
+        )
+
+    if isinstance(response.data, dict):
+        detail = response.data.get(
+            "detail",
+            "The request could not be processed.",
+        )
+    else:
+        detail = response.data
+    response.data = {
+        "success": False,
+        "error": str(detail),
+        "code": "request_error",
+    }
+    return response
+
+
+def chat_error(message, status, code="provider_error"):
+    return Response(
+        {"success": False, "error": message, "code": code},
+        status=status,
+    )
+
+
 @api_view(["POST"])
 def chat_message(request):
-    print("========== CHAT API STARTED ==========", flush=True)
-    print("Message received", flush=True)
-    print("Gemini key exists:", bool(GEMINI_API_KEY), flush=True)
+    print("Chat request received", flush=True)
 
     if not isinstance(request.data, dict):
-        print("History type: unavailable", flush=True)
-        return Response({"reply": "Request body must be a JSON object."}, status=400)
+        return chat_error(
+            "Request body must be a JSON object.",
+            400,
+            "invalid_request",
+        )
 
     message = request.data.get("message")
     history = request.data.get("history", [])
-    print("History type:", type(history).__name__, flush=True)
 
     if not isinstance(message, str) or not message.strip():
-        return Response({"reply": "Please type a message."}, status=400)
+        return chat_error(
+            "Please type a message.",
+            400,
+            "invalid_message",
+        )
 
     message = message.strip()
+    api_key = (GEMINI_API_KEY or "").strip()
 
     if len(message) > 4000:
-        return Response({"reply": "Messages must be 4000 characters or fewer."}, status=400)
+        return chat_error(
+            "Messages must be 4000 characters or fewer.",
+            400,
+            "invalid_message",
+        )
 
     if not isinstance(history, list):
-        return Response({"reply": "History must be a list."}, status=400)
+        return chat_error(
+            "History must be a list.",
+            400,
+            "invalid_history",
+        )
 
     contents = []
     for item in history[-10:]:
         if not isinstance(item, dict):
-            return Response(
-                {"reply": "Each history item must be an object."},
-                status=400,
+            return chat_error(
+                "Each history item must be an object.",
+                400,
+                "invalid_history",
             )
 
         role = item.get("role")
         content = item.get("content")
         if (
-            role not in {"user", "model", "assistant"}
+            not isinstance(role, str)
+            or role not in {"user", "model", "assistant"}
             or not isinstance(content, str)
         ):
-            return Response(
-                {
-                    "reply": (
-                        "Each history item needs a valid role and text content."
-                    )
-                },
-                status=400,
+            return chat_error(
+                "Each history item needs a valid role and text content.",
+                400,
+                "invalid_history",
             )
 
         content = content.strip()
@@ -486,11 +548,14 @@ def chat_message(request):
                 )
             )
 
-    if not GEMINI_API_KEY:
-        print("ERROR: GEMINI_API_KEY is missing.", flush=True)
-        return Response(
-            {"reply": "The chat service has not been configured yet."},
-            status=503,
+    if not api_key or api_key.lower().startswith(
+        ("your-", "your_", "placeholder", "change-me")
+    ):
+        print("Chat configuration error: missing server API key", flush=True)
+        return chat_error(
+            "The chat service is not configured. Please contact the site owner.",
+            503,
+            "missing_api_key",
         )
 
     contents.append(
@@ -500,13 +565,19 @@ def chat_message(request):
         )
     )
 
+    print(
+        "Gemini request received: message_length=%d history_count=%d"
+        % (len(message), len(contents) - 1),
+        flush=True,
+    )
     print("Creating Gemini client", flush=True)
+    request_started = time.monotonic()
     client = None
     try:
         client = genai.Client(
-            api_key=GEMINI_API_KEY,
+            api_key=api_key,
             http_options=types.HttpOptions(
-                timeout=25000,
+                timeout=27000,
                 retry_options=types.HttpRetryOptions(attempts=1),
             ),
         )
@@ -521,34 +592,43 @@ def chat_message(request):
                 "portfolio context, clearly say that you do not have that "
                 "information."
             ),
+            thinking_config=types.ThinkingConfig(
+                thinking_level=types.ThinkingLevel.MINIMAL,
+            ),
             max_output_tokens=500,
         )
 
+        print("Model/API call started", flush=True)
         print("Calling Gemini model:", GEMINI_MODEL, flush=True)
         gemini_response = client.models.generate_content(
             model=GEMINI_MODEL,
             contents=contents,
             config=config,
         )
-        print("Gemini response received", flush=True)
+        print(
+            "Model/API response received in %.0fms"
+            % ((time.monotonic() - request_started) * 1000),
+            flush=True,
+        )
 
         reply = gemini_response.text
         if not isinstance(reply, str) or not reply.strip():
             print("Gemini returned an empty response", flush=True)
-            return Response(
-                {"reply": "Sorry, I could not generate a response right now."},
-                status=502,
+            return chat_error(
+                "The AI service returned an empty response. Please try again.",
+                502,
+                "empty_response",
             )
 
         print("Response length:", len(reply), flush=True)
-        return Response({"reply": reply.strip()})
+        return Response({"success": True, "reply": reply.strip()})
     except Exception as error:
         error_message = str(error)
         formatted_traceback = traceback.format_exc()
-        if GEMINI_API_KEY:
-            error_message = error_message.replace(GEMINI_API_KEY, "[REDACTED]")
+        if api_key:
+            error_message = error_message.replace(api_key, "[REDACTED]")
             formatted_traceback = formatted_traceback.replace(
-                GEMINI_API_KEY,
+                api_key,
                 "[REDACTED]",
             )
 
@@ -556,24 +636,60 @@ def chat_message(request):
         print("Gemini error message:", error_message, flush=True)
         print("Gemini traceback:\n" + formatted_traceback, flush=True)
 
-        if getattr(error, "code", None) == 429:
-            return Response(
-                {
-                    "reply": (
-                        "The Gemini API quota has been reached. "
-                        "Please try again later."
-                    )
-                },
-                status=503,
-            )
+        provider_status = getattr(
+            error,
+            "code",
+            getattr(error, "status_code", None),
+        )
+        lowered_error = error_message.lower()
 
-        return Response(
-            {"reply": "The AI service is temporarily unavailable."},
-            status=502,
+        if isinstance(error, (TimeoutError, httpx.TimeoutException)):
+            return chat_error(
+                "The response is taking too long. Please try again.",
+                504,
+                "timeout",
+            )
+        if provider_status == 429:
+            return chat_error(
+                "The assistant is temporarily busy. Please try again in a moment.",
+                429,
+                "rate_limited",
+            )
+        if provider_status in {401, 403} or any(
+            marker in lowered_error
+            for marker in ("invalid api key", "api key not valid", "api_key_invalid")
+        ):
+            return chat_error(
+                "The AI service is not configured correctly. Please try again later.",
+                503,
+                "invalid_api_key",
+            )
+        if provider_status == 400:
+            return chat_error(
+                "The AI service could not process this request. Please try again.",
+                502,
+                "provider_request_error",
+            )
+        if provider_status == 404 or "model not found" in lowered_error:
+            return chat_error(
+                "The configured AI model is unavailable. Please try again later.",
+                503,
+                "model_unavailable",
+            )
+        return chat_error(
+            "The AI service is temporarily unavailable. Please try again.",
+            502,
         )
     finally:
         if client is not None:
-            client.close()
+            try:
+                client.close()
+            except Exception as error:
+                print(
+                    "Gemini client cleanup failed:",
+                    type(error).__name__,
+                    flush=True,
+                )
 
 
 @require_safe

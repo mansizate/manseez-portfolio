@@ -162,3 +162,7 @@ CSRF_TRUSTED_ORIGINS = [
     ).split(",")
     if origin.strip()
 ]
+
+REST_FRAMEWORK = {
+    "EXCEPTION_HANDLER": "chat.views.chat_api_exception_handler",
+}

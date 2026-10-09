@@ -23,7 +23,9 @@ const API_BASE_URL = (
   import.meta.env.VITE_API_URL ||
   "https://manseez-portfolio.onrender.com"
 ).replace(/\/+$/, "");
-const CHAT_API_URL = `${API_BASE_URL}/api/chat/`;
+const CHAT_API_URL = import.meta.env.DEV
+  ? "/api/chat/"
+  : `${API_BASE_URL}/api/chat/`;
 
 /* =====================================================
    CHESS AI
@@ -244,6 +246,7 @@ export default function PlayWithMe() {
         text: "Hello there!",
       },
     ]);
+  const [isChatLoading, setIsChatLoading] = useState(false);
 
   /* =====================================================
      REFS
@@ -254,6 +257,10 @@ export default function PlayWithMe() {
 
   const chatAbortControllerRef =
     useRef(null);
+
+  const chatMessagesRef = useRef(null);
+
+  const retryRequestsRef = useRef(new Map());
 
   const aiMoveTimerRef =
     useRef(null);
@@ -291,6 +298,13 @@ export default function PlayWithMe() {
       behavior: "smooth",
     });
   }, [moveHistory]);
+
+  useEffect(() => {
+    if (chatMessagesRef.current) {
+      chatMessagesRef.current.scrollTop =
+        chatMessagesRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   /* =====================================================
      COMPUTER MOVE
@@ -595,428 +609,182 @@ export default function PlayWithMe() {
      CHAT SUBMIT
   ===================================================== */
 
-  const handleChatSubmit =
-    async (e) => {
-      e.preventDefault();
+  const sendChatRequest = async (text, history, userMessageId) => {
+    if (chatInFlightRef.current) {
+      return;
+    }
 
-      const text =
-        message.trim();
+    chatInFlightRef.current = true;
+    setIsChatLoading(true);
 
-      if (
-        !text ||
-        chatInFlightRef.current
-      ) {
+    const botMessageId = createChatId();
+    let controller = null;
+    let timeoutId = null;
+    let timedOut = false;
+    setMessages((previous) => [
+      ...previous,
+      {
+        id: botMessageId,
+        sender: "bot",
+        text: "Thinking...",
+        status: "thinking",
+      },
+    ]);
+
+    try {
+      controller = new AbortController();
+      timeoutId = window.setTimeout(() => {
+        timedOut = true;
+        controller.abort();
+      }, CHAT_TIMEOUT_MS);
+      chatAbortControllerRef.current = controller;
+
+      const response = await fetch(CHAT_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: text, history }),
+        signal: controller.signal,
+      });
+
+      const contentType = response.headers.get("content-type") || "";
+      const data = contentType.includes("application/json")
+        ? await response.json()
+        : null;
+
+      if (!response.ok) {
+        const error = new Error(
+          typeof data?.error === "string"
+            ? data.error
+            : `Chat API failed with status ${response.status}`,
+        );
+        error.status = response.status;
+        throw error;
+      }
+
+      if (typeof data?.reply !== "string" || !data.reply.trim()) {
+        throw new Error("The chat service returned an invalid response.");
+      }
+
+      retryRequestsRef.current.delete(botMessageId);
+      setMessages((previous) =>
+        previous.map((item) => {
+          if (item.id === botMessageId) {
+            return { ...item, text: data.reply.trim(), status: "complete" };
+          }
+          if (item.id === userMessageId) {
+            return { ...item, status: "complete" };
+          }
+          return item;
+        }),
+      );
+    } catch (error) {
+      if (error.name === "AbortError" && !timedOut) {
         return;
       }
 
-      chatInFlightRef.current =
-        true;
+      console.error("Chat request failed:", {
+        name: error.name,
+        status: error.status,
+        message: error.message,
+      });
 
-      setMessages(
-        (previous) => [
-          ...previous,
-          {
-            id: createChatId(),
-            sender: "user",
-            text,
-          },
-        ]
-      );
-
-      setMessage("");
-
-      const history =
-        messages
-          .slice(-10)
-          .map(
-            ({
-              sender,
-              text: content,
-            }) => ({
-              role:
-                sender === "user"
-                  ? "user"
-                  : "model",
-              content,
-            })
-          );
-
-      const controller =
-        new AbortController();
-
-      const botMessageId =
-        createChatId();
-
-      let replyText = "";
-
-      let botMessageAdded =
-        false;
-
-      let timedOut = false;
-
-      let timeoutId;
-
-      chatAbortControllerRef.current =
-        controller;
-
-      const timeoutMessage =
-        "Sorry, my reply is taking too long. Please try again.";
-
-      const connectionErrorMessage =
-        "Sorry, I couldn't connect to my AI assistant right now.";
-
-      /* =====================================================
-         UPDATE CHAT REPLY
-      ===================================================== */
-
-      const updateStreamedReply =
-        (textChunk) => {
-          if (
-            !isMountedRef.current
-          ) {
-            return;
-          }
-
-          replyText += textChunk;
-
-          const shouldAddBotMessage =
-            !botMessageAdded;
-
-          botMessageAdded =
-            true;
-
-          setMessages(
-            (previous) => {
-              if (
-                !shouldAddBotMessage
-              ) {
-                return previous.map(
-                  (item) =>
-                    item.id ===
-                    botMessageId
-                      ? {
-                          ...item,
-                          text: replyText,
-                        }
-                      : item
-                );
-              }
-
-              return [
-                ...previous,
-                {
-                  id: botMessageId,
-                  sender: "bot",
-                  text: replyText,
-                },
-              ];
-            }
-          );
-        };
-
-      /* =====================================================
-         SERVER SENT EVENT
-      ===================================================== */
-
-      const handleServerEvent =
-        (eventBlock) => {
-          let eventName =
-            "message";
-
-          const dataLines = [];
-
-          for (
-            const line of eventBlock.split(
-              /\r?\n/
-            )
-          ) {
-            if (
-              line.startsWith("event:")
-            ) {
-              eventName =
-                line
-                  .slice(6)
-                  .trim();
-            } else if (
-              line.startsWith("data:")
-            ) {
-              dataLines.push(
-                line
-                  .slice(5)
-                  .trim()
-              );
-            }
-          }
-
-          if (!dataLines.length) {
-            return false;
-          }
-
-          const data =
-            JSON.parse(
-              dataLines.join("\n")
-            );
-
-          if (
-            eventName === "token" &&
-            typeof data.text ===
-              "string"
-          ) {
-            updateStreamedReply(
-              data.text
-            );
-          } else if (
-            eventName === "error"
-          ) {
-            throw new Error(
-              typeof data.message ===
-                "string"
-                ? data.message
-                : "The chat service could not finish the reply."
-            );
-          }
-
-          return (
-            eventName === "done"
-          );
-        };
-
-      /* =====================================================
-         CHAT REQUEST
-      ===================================================== */
-
-      try {
-        const timeout =
-          new Promise(
-            (_, reject) => {
-              timeoutId =
-                window.setTimeout(
-                  () => {
-                    timedOut = true;
-
-                    controller.abort();
-
-                    reject(
-                      new Error(
-                        "Chat request timed out"
-                      )
-                    );
-                  },
-                  CHAT_TIMEOUT_MS
-                );
-            }
-          );
-
-        const request =
-          fetch(
-            CHAT_API_URL,
-            {
-              method: "POST",
-
-              headers: {
-                "Content-Type":
-                  "application/json",
-              },
-
-              body: JSON.stringify({
-                message: text,
-                history,
-              }),
-
-              signal:
-                controller.signal,
-            }
-          );
-
-        const response =
-          await Promise.race([
-            request,
-            timeout,
-          ]);
-
-        if (!response.ok) {
-          throw new Error(
-            `Chat API failed with status ${response.status}`
-          );
-        }
-
-        const contentType =
-          response.headers.get(
-            "content-type"
-          ) || "";
-
-        /* JSON response */
-
-        if (
-          contentType.includes(
-            "application/json"
-          )
-        ) {
-          const data =
-            await response.json();
-
-          if (
-            typeof data.reply !==
-              "string" ||
-            !data.reply.trim()
-          ) {
-            throw new Error(
-              "Invalid response from chat API"
-            );
-          }
-
-          updateStreamedReply(
-            data.reply
-          );
-        }
-
-        /* Streaming response */
-
-        else if (
-          contentType.includes(
-            "text/event-stream"
-          ) &&
-          response.body
-        ) {
-          const reader =
-            response.body.getReader();
-
-          const decoder =
-            new TextDecoder();
-
-          let buffer = "";
-
-          let streamFinished =
-            false;
-
-          while (
-            !streamFinished
-          ) {
-            const readResult =
-              await Promise.race([
-                reader.read(),
-                timeout,
-              ]);
-
-            buffer +=
-              decoder.decode(
-                readResult.value ||
-                  new Uint8Array(),
-                {
-                  stream:
-                    !readResult.done,
-                }
-              );
-
-            let boundary =
-              buffer.search(
-                /\r?\n\r?\n/
-              );
-
-            while (
-              boundary !== -1
-            ) {
-              const eventBlock =
-                buffer.slice(
-                  0,
-                  boundary
-                );
-
-              const delimiter =
-                buffer.match(
-                  /\r?\n\r?\n/
-                )[0];
-
-              buffer =
-                buffer.slice(
-                  boundary +
-                    delimiter.length
-                );
-
-              streamFinished =
-                handleServerEvent(
-                  eventBlock
-                );
-
-              if (
-                streamFinished
-              ) {
-                break;
-              }
-
-              boundary =
-                buffer.search(
-                  /\r?\n\r?\n/
-                );
-            }
-
-            if (
-              readResult.done
-            ) {
-              if (
-                buffer.trim()
-              ) {
-                streamFinished =
-                  handleServerEvent(
-                    buffer
-                  );
-              }
-
-              break;
-            }
-          }
-
-          if (!replyText.trim()) {
-            throw new Error(
-              "Chat API returned an empty response"
-            );
-          }
-        } else {
-          throw new Error(
-            "Invalid response format from chat API"
-          );
-        }
-      } catch (error) {
-        if (
-          error.name !==
-            "AbortError" ||
-          timedOut
-        ) {
-          console.error(
-            "Chat error:",
-            error
-          );
-
-          if (
-            isMountedRef.current
-          ) {
-            setMessages(
-              (previous) => [
-                ...previous,
-                {
-                  id: createChatId(),
-                  sender: "bot",
-                  text: timedOut
-                    ? timeoutMessage
-                    : error.message ||
-                      connectionErrorMessage,
-                },
-              ]
-            );
-          }
-        }
-      } finally {
-        window.clearTimeout(
-          timeoutId
-        );
-
-        chatAbortControllerRef.current =
-          null;
-
-        chatInFlightRef.current =
-          false;
+      if (!isMountedRef.current) {
+        return;
       }
-    };
+
+      const errorMessage = timedOut
+        ? "The response is taking too long. Please try again."
+        : error.status === 429
+          ? "The assistant is temporarily busy. Please try again in a moment."
+          : error.status >= 500 || !error.status
+            ? "I'm having trouble connecting right now. Please try again."
+            : error.message || "Please check your message and try again.";
+
+      retryRequestsRef.current.set(botMessageId, {
+        message: text,
+        history,
+        botMessageId,
+        userMessageId,
+      });
+      setMessages((previous) =>
+        previous.map((item) =>
+          item.id === botMessageId
+            ? { ...item, text: errorMessage, status: "error", retryable: true }
+            : item.id === userMessageId
+              ? { ...item, status: "error" }
+              : item,
+        ),
+      );
+    } finally {
+      if (timeoutId !== null) {
+        window.clearTimeout(timeoutId);
+      }
+      if (chatAbortControllerRef.current === controller) {
+        chatAbortControllerRef.current = null;
+      }
+      chatInFlightRef.current = false;
+      if (isMountedRef.current) {
+        setIsChatLoading(false);
+      }
+    }
+  };
+
+  const handleChatSubmit = (event) => {
+    event.preventDefault();
+
+    const text = message.trim();
+    if (!text || chatInFlightRef.current) {
+      return;
+    }
+
+    const history = messages
+      .filter(
+        (item) =>
+          item.status !== "thinking" &&
+          item.status !== "error",
+      )
+      .slice(-10)
+      .map((item) => ({
+        role: item.sender === "user" ? "user" : "model",
+        content: item.text,
+      }));
+
+    const userMessageId = createChatId();
+    retryRequestsRef.current.clear();
+    setMessages((previous) => [
+      ...previous.map((item) =>
+        item.retryable ? { ...item, retryable: false } : item,
+      ),
+      { id: userMessageId, sender: "user", text },
+    ]);
+    setMessage("");
+    void sendChatRequest(text, history, userMessageId);
+  };
+
+  const handleChatRetry = (botMessageId) => {
+    const failedRequest = retryRequestsRef.current.get(botMessageId);
+    if (!failedRequest || chatInFlightRef.current) {
+      return;
+    }
+
+    retryRequestsRef.current.delete(botMessageId);
+    setMessages((previous) =>
+      previous.map((item) =>
+        item.id === failedRequest.userMessageId
+          ? { ...item, status: "pending" }
+          : item.id === failedRequest.botMessageId
+            ? { ...item, retryable: false }
+            : item,
+      ),
+    );
+    void sendChatRequest(
+      failedRequest.message,
+      failedRequest.history,
+      failedRequest.userMessageId,
+    );
+  };
 
   /* =====================================================
      GAME STATUS
@@ -1126,7 +894,12 @@ export default function PlayWithMe() {
 
           </div>
 
-          <div className="chat-messages">
+          <div
+            className="chat-messages"
+            ref={chatMessagesRef}
+            aria-live="polite"
+            aria-busy={isChatLoading}
+          >
 
             {messages.map((item) => (
               <div
@@ -1137,7 +910,24 @@ export default function PlayWithMe() {
                     : "bot-message"
                 }`}
               >
-                {item.text}
+                {item.status === "thinking" ? (
+                  <span className="chat-thinking">
+                    Thinking
+                    <span aria-hidden="true">...</span>
+                  </span>
+                ) : (
+                  item.text
+                )}
+                {item.retryable && (
+                  <button
+                    className="chat-retry"
+                    type="button"
+                    onClick={() => handleChatRetry(item.id)}
+                    disabled={isChatLoading}
+                  >
+                    Retry
+                  </button>
+                )}
               </div>
             ))}
 
@@ -1147,17 +937,32 @@ export default function PlayWithMe() {
             className="chat-input"
             onSubmit={handleChatSubmit}
           >
-            <input
-              type="text"
+            <textarea
+              rows="1"
               value={message}
               onChange={(event) =>
                 setMessage(event.target.value)
               }
+              onKeyDown={(event) => {
+                if (
+                  event.key === "Enter" &&
+                  !event.shiftKey &&
+                  !event.nativeEvent.isComposing
+                ) {
+                  event.preventDefault();
+                  event.currentTarget.form?.requestSubmit();
+                }
+              }}
               placeholder="Type a message..."
+              aria-label="Chat message"
             />
 
-            <button type="submit">
-              ➤
+            <button
+              type="submit"
+              disabled={isChatLoading || !message.trim()}
+              aria-label={isChatLoading ? "Waiting for reply" : "Send message"}
+            >
+              {isChatLoading ? "…" : "➤"}
             </button>
           </form>
 
